@@ -17,8 +17,8 @@
   --f-body:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
 
-  --gutter:max(16px,env(safe-area-inset-left,0px));
-  --gutter-r:max(16px,env(safe-area-inset-right,0px));
+  --gutter:max(clamp(16px,4vw,56px),env(safe-area-inset-left,0px));
+  --gutter-r:max(clamp(16px,4vw,56px),env(safe-area-inset-right,0px));
   --wrap:1320px;
   --ease:cubic-bezier(.22,1,.36,1);
 }
@@ -238,7 +238,8 @@ table.compare{width:100%;border-collapse:collapse;min-width:720px;font-size:15px
 .stat:not(:nth-child(3n+1)){padding-left:24px;border-left:1px solid var(--line-dark)}
 .stat b{display:block;font-family:var(--f-display);font-weight:900;font-variation-settings:"wdth" 70;font-size:clamp(64px,9vw,140px);line-height:.85;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .stat b small{font-size:.38em;font-variation-settings:"wdth" 100;font-weight:700;margin-left:4px;letter-spacing:0}
-.stat span{display:block;margin-top:12px;font-weight:600}
+.stat>span{display:block;margin-top:12px;font-weight:600}
+.stat b span{display:inline}
 .stat:nth-child(1) b{color:var(--gold-deep)}
 
 /* ---------- FAIXA TREINAMENTO (home) ---------- */
@@ -493,11 +494,6 @@ footer{background:var(--navy);padding-top:80px;overflow:hidden}
 @media (pointer:fine){.cursor{display:block}}
 
 /* ---------- RESPONSIVO ---------- */
-@media (max-width:1280px){
-  .nav ul,.nav .acc{display:none}
-  .menu-btn{display:inline-flex}
-  .nav .nav-cta{display:none}
-}
 @media (max-width:1080px){
   .mod-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .cols4{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -951,7 +947,6 @@ body.has-cookie .wa-float{bottom:calc(var(--cookie-h,80px) + 14px)}
 .hub-nodes span{font-size:13.5px;color:var(--body-on-light)}
 
 @media (max-width:1280px){
-  .nav-act{display:none}
   .hire{grid-template-columns:repeat(3,minmax(0,1fr))}
   .hire li:nth-child(3)::after{display:none}
   .cycle{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -979,4 +974,93 @@ body.has-cookie .wa-float{bottom:calc(var(--cookie-h,80px) + 14px)}
   .hb-row,.hb-ref{grid-template-columns:minmax(70px,var(--lw)) minmax(0,1fr) 84px;font-size:13px}
   .kpi{padding:14px 16px}
   .dlg-box{border-radius:20px}
+}
+
+/* ---------- ENQUADRAMENTO POR DISPOSITIVO ---------- */
+/* notebook: menu completo mais compacto, área do cliente só com ícone */
+@media (max-width:1365px){
+  .nav-in{gap:10px}
+  .nav ul a{padding:8px 10px;font-size:14px}
+  .acc-btn{width:44px;padding:0;justify-content:center}
+  .acc-btn span{display:none}
+  .nav-cta{padding-inline:18px}
+}
+@media (max-width:1199px){
+  .nav-cta .arr{display:none}
+  .brand small{display:none}
+}
+/* tablet e celular: menu em tela cheia; no tablet o pré-diagnóstico continua à vista */
+@media (max-width:1099px){
+  .nav ul,.nav .acc{display:none}
+  .menu-btn{display:inline-flex}
+  .nav-in{padding:8px 8px 8px 16px}
+}
+@media (max-width:599px){
+  .nav-act{display:none}
+}
+.sheet{gap:0;padding-top:calc(96px + env(safe-area-inset-top,0px));padding-bottom:calc(32px + env(safe-area-inset-bottom,0px))}
+.sheet>a:not(.btn){display:flex;align-items:center;min-height:56px;font-size:clamp(26px,6.4vw,40px);border-bottom:1px solid var(--line)}
+.sheet>a.sub{min-height:44px;font-size:clamp(17px,4.2vw,22px);padding-left:16px;border-bottom:0}
+.sheet .sheet-acc a{display:flex;align-items:center;min-height:44px;line-height:1.3}
+.sheet>.btn{align-self:stretch;justify-content:center;min-height:52px;margin-top:24px}
+body.menu-open .wa-float,body.menu-open .cookiebar{visibility:hidden}
+@media (min-width:600px) and (max-width:1099px){
+  .sheet{padding-left:max(var(--gutter),calc(50vw - 300px));padding-right:max(var(--gutter-r),calc(50vw - 300px))}
+}
+
+/* rodapé: palavra gigante sempre inteira */
+.giant{font-size:clamp(48px,13.4vw,250px);gap:0}
+
+/* toque: alvos de no mínimo 44px */
+@media (pointer:coarse){
+  .filters button,.legal-tabs button,.turma,.slot button{min-height:44px}
+  .tbl-toggle{min-height:40px;padding-inline:14px}
+  .chips span{min-height:44px}
+  .q-btns button{width:52px;height:52px}
+}
+
+/* celular */
+@media (max-width:640px){
+  .ft-top{grid-template-columns:1fr 1fr;gap:28px 18px}
+  .ft-top>div:first-child{grid-column:1/-1}
+  .ft-bot{flex-direction:column;align-items:flex-start}
+  /* projetos: carrossel horizontal em vez de 12 cartões empilhados */
+  #projList{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:calc(-1 * var(--gutter));padding:4px var(--gutter) 14px;scroll-padding-inline:var(--gutter);scrollbar-width:none}
+  #projList::-webkit-scrollbar{display:none}
+  #projList>.proj{flex:0 0 78%;scroll-snap-align:start}
+  #projList>.proj:hover{transform:none}
+  .hero{padding-top:calc(112px + env(safe-area-inset-top,0px))}
+  .phero{padding-top:calc(120px + env(safe-area-inset-top,0px))}
+  .rings{max-width:340px}
+  .sec{padding-block:clamp(72px,18vw,96px)}
+}
+/* tablet em pé */
+@media (min-width:600px) and (max-width:899px){
+  .rings{max-width:380px}
+  .hero-sub,.phero .lede{max-width:60ch}
+}
+@media (max-width:1080px){.ft-top>div:first-child{grid-column:1/-1}}
+.nav-in{max-width:calc(var(--wrap) - var(--gutter) - var(--gutter-r))}
+@media (max-width:1099px){.nav-act{margin-left:auto}}
+.rings-label>div,.rings-label{padding:0 26%}
+.rings-label span{max-width:15ch;margin-inline:auto;line-height:1.35;font-size:11.5px}
+
+/* módulos: barra de módulos inteira no celular, tabela com rótulos fixos */
+@media (max-width:560px){
+  .subnav-in{gap:2px;padding:4px}
+  .subnav a{padding:9px 11px;font-size:13.5px;gap:6px}
+  .subnav a i{width:8px;height:8px}
+}
+@media (max-width:380px){.subnav a i{display:none}.subnav a{padding:9px 10px}}
+.compare tbody th,.compare thead th:first-child{position:sticky;left:0;z-index:1;background:var(--navy)}
+@media (max-width:640px){.compare tbody th{width:130px;min-width:130px}}
+
+/* tablet em pé: duas colunas onde cabe */
+@media (min-width:600px) and (max-width:899px){
+  .plans,.pay,.team{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .plans>:last-child:nth-child(odd),.pay>:last-child:nth-child(odd),.team>:last-child:nth-child(odd){grid-column:1/-1}
+}
+@media (min-width:1081px) and (max-width:1279px){
+  .ft-top{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .ft-top>div:first-child{grid-column:1/-1}
 }

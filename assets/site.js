@@ -194,12 +194,20 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
 
   /* ---------- menu mobile e nav que some ao descer ---------- */
   const menuBtn = $('#menuBtn');
-  function closeMenu() { document.body.classList.remove('menu-open'); if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false'); }
-  if (menuBtn) menuBtn.addEventListener('click', () => {
-    const open = document.body.classList.toggle('menu-open');
+  function setMenu(open) {
+    if (!menuBtn || document.body.classList.contains('menu-open') === open) return;
+    document.body.classList.toggle('menu-open', open);
     menuBtn.setAttribute('aria-expanded', String(open));
     menuBtn.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
-  });
+    lockScroll(open);
+  }
+  function closeMenu() { setMenu(false); }
+  if (menuBtn) {
+    menuBtn.addEventListener('click', () => setMenu(!document.body.classList.contains('menu-open')));
+    $$('#sheet a').forEach(a => a.addEventListener('click', closeMenu));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+    matchMedia('(min-width:1100px)').addEventListener('change', e => { if (e.matches) closeMenu(); });
+  }
   const nav = $('#nav');
   let lastY = 0;
   onScroll(() => {
