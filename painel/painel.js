@@ -7,7 +7,7 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const NS = 'http://www.w3.org/2000/svg';
-  const KEY = 'sgm-painel-v2';
+  const KEY = 'sgm-painel-v3';
   const AUTH = 'sgm-painel-auth';
   const DEMO_CODE = '246810';
 
@@ -23,7 +23,7 @@
     book: 'M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2zM4 19V5', chart: 'M4 20V10M10 20V4M16 20v-7M22 20H2', home: 'M3 11l9-7 9 7v9h-6v-6H9v6H3z',
     inbox: 'M3 13l3-8h12l3 8v6H3zM3 13h5l1 3h6l1-3h5', file: 'M6 3h8l5 5v13H6zM14 3v5h5', upload: 'M12 16V5M7 10l5-5 5 5M5 20h14',
     clock: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2', pin: 'M12 21s-7-6-7-11a7 7 0 0 1 14 0c0 5-7 11-7 11zM12 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4z',
-    menu: 'M4 7h16M4 12h16M4 17h16', layers: 'M12 3l9 5-9 5-9-5zM3 13l9 5 9-5', award: 'M12 3a6 6 0 1 0 0 12 6 6 0 0 0 0-12zM8.5 14 7 21l5-3 5 3-1.5-7',
+    menu: 'M4 7h16M4 12h16M4 17h16', mail: 'M3 6h18v12H3zM3 7l9 6 9-6', copy: 'M8 8h12v12H8zM4 16V4h12', layers: 'M12 3l9 5-9 5-9-5zM3 13l9 5 9-5', award: 'M12 3a6 6 0 1 0 0 12 6 6 0 0 0 0-12zM8.5 14 7 21l5-3 5 3-1.5-7',
     money: 'M3 6h18v12H3zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM6 9v.01M18 15v.01', mic: 'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3',
     globe: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18', refresh: 'M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7',
     quote: 'M7 7h4v4c0 3-2 5-4 6M14 7h4v4c0 3-2 5-4 6', hash: 'M5 9h14M5 15h14M10 4 8 20M16 4l-2 16', send: 'M4 12l16-8-6 16-3-7z'
@@ -55,7 +55,7 @@
   const brl2 = v => 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const dBR = iso => { if (!iso) return '—'; const [y, m, d] = iso.split('-'); return `${d}/${m}/${y}`; };
   const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
-  const today = () => new Date().toISOString().slice(0, 10);
+  const today = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
   const nowBR = () => { const d = new Date(); return d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); };
   const ini = n => (n || '?').split(/\s+/).filter(w => w.length > 2 || /^[A-ZÁÉÍÓÚ]/.test(w)).slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
   const digits = s => String(s || '').replace(/\D/g, '');
@@ -67,7 +67,11 @@
   };
   const fmtCPF = v => { const d = digits(v).slice(0, 11); return d.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2'); };
   const fmtTel = v => { const d = digits(v).slice(0, 11); return d.length > 10 ? d.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3') : d.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3').replace(/[-\s(]+$/, ''); };
-  const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const norm = s => String(s || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+  /* e-mails de exemplo usam o domínio reservado .example: nunca chegam a ninguém de verdade */
+  const slug = s => norm(String(s).split('/')[0]).replace(/[^a-z0-9]+/g, '');
+  const pessoaEmail = n => norm(n).split(/\s+/).filter(Boolean).filter((w, i, a) => i === 0 || i === a.length - 1).join('.') + '@email.example';
+  const isEmail = v => /^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(v);
 
   function countUp(el, to, o = {}) {
     const dec = o.dec || 0, pre = o.pre || '', suf = o.suf || '', dur = o.dur || 1400;
@@ -88,7 +92,7 @@
 
   function seed() {
     const P = (id, data, mun, orgao, resp, cargo, tipo, mods, status, cpf, email, tel, urg, pop, answers, desc) => ({ id, data, mun, orgao, resp, cargo, tipo, mods, status, cpf, cnpj: '••.•••.•••/0001-•• (validado)', email, tel, urg, pop, answers, desc, notas: [] });
-    return {
+    const d = {
       pedidos: [
         P('p1', '2026-10-26', 'Tianguá/CE', 'Secretaria de Educação', 'Marta Albuquerque', 'Secretária de Educação', 'Pré-diagnóstico', ['Educação', 'Gestão'], 'novo', '•••.318.442-••', 'm.albuquerque@[municipio].gov.br', '(88) 9••••-••12', 'Recurso bloqueado por pendência', '30 a 100 mil', [['PAR Ciclo 5', 'Em andamento'], ['PNAE, PNATE e PDDE', 'Algum com pendência'], ['Escolas na rede', '41']], 'Temos duas obras de creche paradas desde 2022 e a prestação de contas do PNAE de 2024 está em diligência no SIGPC. Precisamos regularizar antes de cadastrar novas ações do PAR.'),
         P('p2', '2026-10-25', 'Salinópolis/PA', 'Prefeitura Municipal', 'José Carvalho', 'Controlador-geral', 'Proposta e ata', ['Gestão'], 'contato', '•••.902.115-••', 'controladoria@[municipio].gov.br', '(91) 9••••-••40', 'Captar novos recursos', '30 a 100 mil', [['Obra ou convênio paralisado', 'Sim, 1 ou 2'], ['Plataformas', 'Transferegov, SIMEC']], 'Queremos a ata vigente e a proposta para aderir ainda neste exercício. A controladoria precisa da pesquisa de preços para anexar ao processo.'),
@@ -171,9 +175,15 @@
       depos: [['Luslarlene U. de Souza Fiametti', "Santa Luzia d'Oeste/RO", 'Secretária Municipal de Educação', true], ['Isabel Fonseca', 'Cachoeirinha/RS', 'Secretária de Educação', true], ['Dalva Maria de Carli', 'Santo Antônio da Patrulha/RS', 'Secretária Municipal de Educação', true], ['Gleíza Guerra de Assis Braga', 'Maracanaú/CE', 'Gestora educacional', true], ['Alex Sandro Lima', 'Boa Viagem/CE', 'Secretário Municipal', true], ['Lenilda Campos', 'Frei Miguelinho/PE', 'Secretária Municipal', false]].map(([nome, mun, cargo, on]) => ({ id: uid(), nome, mun, cargo, on, texto: '' })),
       pub: { pend: 0, last: '26/10/2026 às 18:35' }
     };
+    d.pedidos.forEach(p => { p.email = p.email.replace('[municipio].gov.br', slug(p.mun) + '.example'); });
+    d.pessoas.forEach(p => { p.email = pessoaEmail(p.nome); });
+    d.envios = []; d.finEmails = {};
+    return d;
   }
   let db;
   try { db = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch (e) { db = seed(); }
+  db.envios = db.envios || []; db.finEmails = db.finEmails || {};
+  db.pessoas.forEach(p => { if (!p.email) p.email = pessoaEmail(p.nome); });
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(db)); return true; } catch (e) { toast('Não foi possível salvar neste navegador (espaço cheio).', true); return false; } };
   const dirty = () => { db.pub.pend++; save(); };
 
@@ -306,7 +316,7 @@
   /* ---------- navegação ---------- */
   const NAV = [
     ['visao', 'Visão geral', 'home', '#E0A729'], ['pedidos', 'Pedidos', 'inbox', '#39A9DB'], ['inscricoes', 'Inscrições', 'users', '#EA6036'],
-    ['cursos', 'Cursos', 'book', '#40C965'], ['conteudo', 'Conteúdo do site', 'layers', '#C3CDDA']
+    ['cursos', 'Cursos', 'book', '#40C965'], ['conteudo', 'Conteúdo do site', 'layers', '#C3CDDA'], ['relatorios', 'Relatórios', 'file', '#93A3B8']
   ];
   function drawNav() {
     const badge = { pedidos: db.pedidos.filter(p => p.status === 'novo').length + ' novos', inscricoes: String(db.pessoas.length), cursos: String(db.cursos.length), conteudo: db.pub.pend ? String(db.pub.pend) : '' };
@@ -322,7 +332,7 @@
   function render(fresh) {
     drawNav();
     const act = document.activeElement, keepId = act && act.id, sel = act && act.selectionStart;
-    const V = { visao, pedidos, inscricoes, cursos, conteudo }[S.view];
+    const V = { visao, pedidos, inscricoes, cursos, conteudo, relatorios }[S.view];
     const box = h('div', { class: fresh || lastView !== S.view ? 'v-in' : '' }, V());
     lastView = S.view;
     $('#main').replaceChildren(box);
@@ -354,7 +364,7 @@
     const wk = [3, 5, 4, 6, 4, 7, 5, 4 + extraP], wmax = Math.max(...wk);
     const ufs = { 'Ceará': 9, 'Pará': 7, 'Rio Grande do Sul': 6, 'Maranhão': 5, 'Paraíba': 4, 'Pernambuco': 4 };
     return [
-      head('Painel de controle', 'Visão geral', 'Como o site está gerando pedidos e inscrições para a equipe comercial.', [btn('Exportar planilha', 'download', exportPedidos), addBtn('Adicionar', quickAdd)]),
+      head('Painel de controle', 'Visão geral', 'Como o site está gerando pedidos e inscrições para a equipe comercial.', [btn('Exportar planilha', 'download', () => exportArea(['pedidos', 'inscricoes', 'financeiro'])), addBtn('Adicionar', quickAdd)]),
       h('div', { class: 'stack' },
         h('div', { class: 'chips' }, [['7d', '7 dias'], ['30d', '30 dias'], ['ano', '2026']].map(([id, l]) => chip(l, S.period === id, () => { S.period = id; render(); }))),
         h('div', { class: 'grid g4' },
@@ -394,7 +404,7 @@
     const list = db.pedidos.filter(p => (S.pStatus === 'todos' || p.status === S.pStatus) && (!q || norm([p.mun, p.resp, p.orgao, p.email].join(' ')).includes(q)));
     const s = db.pedidos.find(p => p.id === S.pSel);
     return [
-      head('Painel de controle', 'Pedidos', 'Pré-diagnósticos, propostas e treinamentos in company enviados pelo site.', [btn('Exportar planilha', 'download', exportPedidos), addBtn('Novo pedido', addPedido)]),
+      head('Painel de controle', 'Pedidos', 'Pré-diagnósticos, propostas e treinamentos in company enviados pelo site.', [btn('Exportar planilha', 'download', () => exportArea(['pedidos'])), addBtn('Novo pedido', addPedido)]),
       h('div', { class: 'toolbar' }, [['todos', 'Todos'], ...Object.entries(ST)].map(([id, l]) => chip(l, S.pStatus === id, () => { S.pStatus = id; render(); }, counts[id])),
         h('label', { class: 'search' }, ic('search'), h('span', { class: 'sr', text: 'Buscar pedido' }), h('input', { id: 'qPed', type: 'search', placeholder: 'Município, responsável ou e-mail', value: S.q, oninput: e => { S.q = e.target.value; render(); } }))),
       h('div', { class: 'split' }, h('section', { class: 'card', style: 'padding:8px' }, pedidoTable(list)), s ? detPedido(s) : h('aside', { class: 'det' }, h('p', { style: 'margin:0;color:var(--mute-d)', text: 'Selecione um pedido para ver as respostas do formulário.' })))
@@ -410,8 +420,8 @@
       h('div', { class: 'stack', style: 'gap:8px' }, h('div', { style: 'display:flex;justify-content:space-between;align-items:center' }, h('span', { class: 'lbl', text: 'Anotações da equipe' }),
         h('button', { type: 'button', class: 'btn btn-sm btn-add', style: 'background:transparent;color:var(--paper);border-color:rgba(237,240,244,.25)', onclick: () => openForm({ title: 'Nova anotação', eyebrow: s.mun, fields: [{ name: 'txt', label: 'Anotação', type: 'textarea', required: true, placeholder: 'Ex.: Liguei para a secretária, retorno na sexta.' }], onSubmit: d => { s.notas.unshift({ t: nowBR(), txt: d.txt }); save(); render(); toast('Anotação adicionada.'); } }) }, ic('plus'), 'Adicionar')),
         s.notas.length ? h('div', { class: 'tl' }, s.notas.map(n => h('div', null, h('small', { text: n.t }), n.txt))) : h('p', { class: 'lgpd', text: 'Nenhuma anotação ainda.' })),
-      h('div', { class: 'acts' }, h('button', { type: 'button', class: 'btn btn-gold', onclick: () => toast('Abriria a conversa no WhatsApp com ' + s.resp + '.') }, ic('send'), 'Responder no WhatsApp'),
-        h('button', { type: 'button', class: 'btn', style: 'background:transparent;color:var(--paper);border-color:rgba(237,240,244,.25)', onclick: () => toast('Proposta preparada para ' + s.email + '.') }, ic('file'), 'Enviar proposta')),
+      h('div', { class: 'acts' }, h('button', { type: 'button', class: 'btn btn-gold', onclick: () => responder(s) }, ic('mail'), 'Responder por e-mail'),
+        h('button', { type: 'button', class: 'btn', style: 'background:transparent;color:var(--paper);border-color:rgba(237,240,244,.25)', onclick: () => proposta(s) }, ic('file'), 'Enviar proposta')),
       h('p', { class: 'lgpd', text: 'CPF e telefone aparecem mascarados. O dado completo só abre para quem tem permissão, e cada acesso fica registrado (LGPD).' }));
   }
   function addPedido() {
@@ -431,7 +441,19 @@
       db.pedidos.unshift(p); save(); go('pedidos', { pSel: p.id, pStatus: 'todos', q: '' }); toast('Pedido de ' + p.mun + ' registrado.');
     } });
   }
-  const exportPedidos = () => csv('pedidos-sigemec.csv', [['Data', 'Município', 'Órgão', 'Responsável', 'Cargo', 'Tipo', 'Módulos', 'Situação', 'Urgência'], ...db.pedidos.map(p => [dBR(p.data), p.mun, p.orgao, p.resp, p.cargo, p.tipo, p.mods.join(', '), ST[p.status], p.urg])]);
+  const temEmail = s => isEmail(s.email) || (toast('Este pedido não tem e-mail válido cadastrado.', true), false);
+  function responder(s) {
+    if (!temEmail(s)) return;
+    composeMail([{ to: [s.email], cc: [], bcc: [], label: s.mun, subject: `SIGEMEC · ${s.tipo} · ${s.mun}`,
+      body: `Olá, ${primeiro(s.resp)},\n\nRecebemos o pedido de ${s.tipo.toLowerCase()} de ${s.mun} (${s.orgao}) e já estamos analisando a situação descrita.\n\nPara agilizar, você tem disponibilidade para uma conversa de 20 minutos nesta semana? Pode responder com o melhor dia e horário.` + ASSINATURA,
+      onSent: () => { s.notas.unshift({ t: nowBR(), txt: 'E-mail de retorno enviado para ' + s.email }); if (s.status === 'novo') s.status = 'contato'; } }], { tipo: 'Retorno de pedido' });
+  }
+  function proposta(s) {
+    if (!temEmail(s)) return;
+    composeMail([{ to: [s.email], cc: ['comercial@sigemec.com.br'], bcc: [], label: s.mun, subject: `Proposta SIGEMEC · ${s.mods.join(', ')} · ${s.mun}`,
+      body: `Olá, ${primeiro(s.resp)},\n\nSegue em anexo a proposta do SIGEMEC para ${s.mun}, com o escopo dos módulos ${s.mods.join(', ')}.\n\nTambém vão anexos a ata de registro de preço vigente, o termo de referência e a pesquisa de preços, para instruir o processo de adesão.\n\nFicamos à disposição para apresentar a proposta à equipe.` + ASSINATURA,
+      onSent: () => { s.notas.unshift({ t: nowBR(), txt: 'Proposta enviada por e-mail para ' + s.email }); s.status = 'proposta'; } }], { tipo: 'Proposta', anexo: 'a proposta, a ata e o termo de referência' });
+  }
 
   /* =================== INSCRIÇÕES =================== */
   function inscricoes() {
@@ -440,18 +462,18 @@
     const list = db.pessoas.filter(p => p.turma === t.id && (!q || norm(p.nome + ' ' + p.mun + ' ' + p.funcao).includes(q)));
     const n = inscritos(t), pagos = db.pessoas.filter(p => p.turma === t.id && p.status === 'Pago').length;
     return [
-      head('Painel de controle', 'Inscrições', 'Pré-inscrições dos encontros técnicos, com participantes e pagamento.', [btn('Exportar planilha', 'download', () => csv(`inscricoes-${t.id}.csv`, [['Participante', 'CPF', 'Função', 'Município', 'Pagador', 'Situação'], ...list.map(p => [p.nome, p.cpf, p.funcao, p.mun, p.pagador, p.status])])), addBtn('Adicionar participante', () => addPessoa(t.id))]),
+      head('Painel de controle', 'Inscrições', 'Pré-inscrições dos encontros técnicos, com participantes e pagamento.', [btn('Exportar planilha', 'download', () => exportArea(['inscricoes', 'financeiro'])), btn('Enviar boletos', 'mail', () => openBoleto(t.id), 'btn-ink'), addBtn('Adicionar participante', () => addPessoa(t.id))]),
       h('div', { class: 'stack' },
         h('div', { class: 'chips' }, allTurmas().map(x => chip(turmaLabel(x), x.id === t.id, () => { S.turma = x.id; render(); }, null, x.curso.cor))),
         h('div', { class: 'grid g4' }, kpi('Inscritos', `${n} / ${t.vagas}`, `${Math.round(n / t.vagas * 100)}% das vagas`, t.curso.cor), kpi('Valor previsto', brl(n * t.curso.preco), brl(t.curso.preco) + ' por participante', '#40C965'), kpi('Pagos nesta lista', String(pagos), null, '#E0A729'), kpi('Situação da turma', t.status, t.curso.nome, '#39A9DB')),
         h('section', { class: 'card', style: 'padding:8px' },
           h('div', { class: 'toolbar', style: 'padding:8px 8px 0' }, h('span', { style: 'font-size:13px;color:var(--body)', text: 'Clique na situação para avançar: pré-inscrito → validado → pago → isento.' }),
             h('label', { class: 'search' }, ic('search'), h('span', { class: 'sr', text: 'Buscar participante' }), h('input', { id: 'qIns', type: 'search', placeholder: 'Nome, função ou município', value: S.iq, oninput: e => { S.iq = e.target.value; render(); } }))),
-          list.length ? h('div', { class: 'tbl-wrap' }, h('table', { class: 'tbl' }, h('thead', null, h('tr', null, ['Participante', 'CPF', 'Função', 'Município', 'Pagador', 'Situação', ''].map(x => h('th', { text: x })))),
+          list.length ? h('div', { class: 'tbl-wrap' }, h('table', { class: 'tbl' }, h('thead', null, h('tr', null, ['Participante', 'CPF', 'Função', 'Município', 'Pagador', 'Situação', 'Ações'].map(x => h('th', { text: x })))),
             h('tbody', null, list.map(p => h('tr', { class: p.fresh ? 'row-in' : '' }, h('td', null, h('b', { text: p.nome })), h('td', { class: 'mono-c', text: p.cpf }), h('td', { text: p.funcao }), h('td', { text: p.mun }), h('td', { style: 'color:var(--body)', text: p.pagador }),
               h('td', null, h('button', { type: 'button', class: 'pill ' + PSC[p.status], title: 'Avançar situação', text: p.status, onclick: () => { p.status = PS[(PS.indexOf(p.status) + 1) % PS.length]; save(); render(); } })),
-              h('td', null, h('button', { type: 'button', class: 'ibtn', 'aria-label': 'Remover ' + p.nome, onclick: () => confirmBox(`Remover ${p.nome} desta turma?`, () => { db.pessoas = db.pessoas.filter(x => x !== p); save(); render(); toast('Participante removido.'); }) }, ic('trash')))))))) : empty('Nenhum participante encontrado.', 'users')),
-        h('div', { class: 'acts' }, btn('Gerar lista de presença', 'check', () => go('cursos', { curso: t.curso.id, cTab: 'presenca', presTurma: t.id }), 'btn-ink'), btn('Enviar boletos da turma', 'send', () => toast(`Boletos enviados para ${list.filter(p => p.status === 'Validado').length} participante(s) validados.`)))
+              h('td', null, h('div', { class: 'acts', style: 'flex-wrap:nowrap' }, p.boleto ? h('span', { class: 'pill p-info', title: 'Boleto enviado', text: dBR(p.boleto).slice(0, 5) }) : null, p.status !== 'Pago' && p.status !== 'Isento' ? h('button', { type: 'button', class: 'ibtn', title: 'Enviar boleto', 'aria-label': 'Enviar boleto para ' + p.nome, onclick: () => openBoleto(t.id, p.id) }, ic('mail')) : null, h('button', { type: 'button', class: 'ibtn', 'aria-label': 'Remover ' + p.nome, onclick: () => confirmBox(`Remover ${p.nome} desta turma?`, () => { db.pessoas = db.pessoas.filter(x => x !== p); save(); render(); toast('Participante removido.'); }) }, ic('trash'))))))))) : empty('Nenhum participante encontrado.', 'users')),
+        h('div', { class: 'acts' }, btn('Gerar lista de presença', 'check', () => go('cursos', { curso: t.curso.id, cTab: 'presenca', presTurma: t.id }), 'btn-ink'), btn('Enviar boletos da turma', 'mail', () => openBoleto(t.id)))
       )
     ];
   }
@@ -580,11 +602,18 @@
     const eleg = ps.filter(p => !p.cert && freq(p) >= 75 && (p.status === 'Pago' || p.status === 'Isento'));
     return h('div', { class: 'stack' },
       h('div', { class: 'cert' }, h('span', { class: 'av', style: `width:56px;height:56px;background:${c.cor}` }, ic('award')), h('div', { style: 'flex:1' }, h('b', { style: 'font:800 18px var(--f-display)', text: `${eleg.length} certificado(s) pronto(s) para emitir` }), h('div', { style: 'font-size:13.5px;color:var(--body)', text: 'Regra: presença mínima de 75% e inscrição paga ou isenta.' })),
-        h('button', { type: 'button', class: 'btn btn-ink', disabled: !eleg.length || null, onclick: () => { eleg.forEach(p => { p.cert = true; }); save(); render(); toast(eleg.length + ' certificado(s) emitido(s) e enviado(s) por e-mail.'); } }, ic('send'), 'Emitir elegíveis')),
-      card('Certificados', null, [addBtn('Certificado avulso', () => openForm({ title: 'Certificado avulso', eyebrow: c.nome, fields: [{ name: 'p', label: 'Participante', type: 'select', options: ps.map(p => [p.id, p.nome]), full: true }, { name: 'obs', label: 'Justificativa', type: 'textarea', placeholder: 'Ex.: Participou on-line pela transmissão.' }], submit: 'Emitir', onSubmit: d => { const p = ps.find(x => x.id === d.p); if (p) { p.cert = true; save(); render(); toast('Certificado emitido para ' + p.nome + '.'); } } }))],
+        h('button', { type: 'button', class: 'btn btn-ink', disabled: !eleg.length || null, onclick: () => mailCert(c, eleg) }, ic('mail'), 'Emitir e enviar elegíveis')),
+      card('Certificados', null, [addBtn('Certificado avulso', () => openForm({ title: 'Certificado avulso', eyebrow: c.nome, fields: [{ name: 'p', label: 'Participante', type: 'select', options: ps.map(p => [p.id, p.nome]), full: true }, { name: 'obs', label: 'Justificativa', type: 'textarea', placeholder: 'Ex.: Participou on-line pela transmissão.' }], submit: 'Emitir e escrever e-mail', onSubmit: d => { const p = ps.find(x => x.id === d.p); if (p) { mailCert(c, [p]); return false; } } }))],
         ps.length ? h('div', { class: 'tbl-wrap' }, h('table', { class: 'tbl' }, h('thead', null, h('tr', null, ['Participante', 'Turma', 'Presença', 'Inscrição', 'Certificado'].map(x => h('th', { text: x })))),
           h('tbody', null, ps.map(p => { const t = turmaById(p.turma), f = freq(p); return h('tr', null, h('td', null, h('b', { text: p.nome })), h('td', { text: t ? turmaLabel(t) : '—' }), h('td', null, h('span', { class: 'pill ' + (f >= 75 ? 'p-ok' : 'p-late'), text: f + '%' })), h('td', null, h('span', { class: 'pill ' + PSC[p.status], text: p.status })),
-            h('td', null, p.cert ? h('span', { class: 'pill p-ok' }, ic('check'), 'Emitido') : h('button', { type: 'button', class: 'btn btn-sm', onclick: () => { p.cert = true; save(); render(); toast('Certificado emitido para ' + p.nome + '.'); } }, 'Emitir'))); })))) : empty('Nenhum participante neste curso.', 'award')));
+            h('td', null, p.cert ? h('span', { class: 'pill p-ok' }, ic('check'), 'Emitido') : h('button', { type: 'button', class: 'btn btn-sm', onclick: () => mailCert(c, [p]) }, ic('mail'), 'Emitir e enviar'))); })))) : empty('Nenhum participante neste curso.', 'award')));
+  }
+  function mailCert(c, ps) {
+    const corpo = `Segue em anexo o seu certificado de participação no ${c.nome} (${c.carga}).\n\nObrigado pela presença e até o próximo encontro.` + ASSINATURA;
+    composeMail(ps.length === 1
+      ? [{ to: [ps[0].email], cc: [], bcc: [], label: ps[0].nome, subject: `Certificado · ${c.nome}`, body: `Olá, ${primeiro(ps[0].nome)},\n\n` + corpo, onSent: () => { ps[0].cert = true; } }]
+      : [{ to: ['comercial@sigemec.com.br'], cc: [], bcc: ps.map(p => p.email), label: ps.length + ' participantes', subject: `Certificado · ${c.nome}`, body: 'Olá,\n\n' + corpo, onSent: () => ps.forEach(p => { p.cert = true; }) }],
+      { tipo: 'Certificado', anexo: ps.length === 1 ? 'o certificado (PDF)' : 'os certificados (PDF)' });
   }
   function cMat(c) {
     return card('Materiais do curso', 'Apostilas, planilhas e modelos enviados aos inscritos.', [addBtn('Adicionar material', () => openForm({ title: 'Novo material', eyebrow: c.nome, fields: [{ name: 'nome', label: 'Nome do material', required: true, full: true }, { name: 'arq', label: 'Arquivo', type: 'file', accept: '.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip', full: true }], onSubmit: d => {
@@ -592,7 +621,7 @@
       c.materiais.push({ id: uid(), nome: d.nome, tipo: ext.slice(0, 4), tam }); save(); render(); toast('Material adicionado.');
     } }))],
       c.materiais.length ? h('div', null, c.materiais.map(m => h('div', { class: 'file' }, h('span', { class: 'fi', text: m.tipo }), h('span', null, h('b', { text: m.nome }), h('small', { text: m.tam })),
-        btn('Enviar aos inscritos', 'send', () => toast(`"${m.nome}" enviado para ${cursoPessoas(c).length} participante(s).`), 'btn-sm'), h('button', { type: 'button', class: 'ibtn', 'aria-label': 'Remover material', onclick: () => { c.materiais = c.materiais.filter(x => x !== m); save(); render(); } }, ic('trash'))))) : empty('Nenhum material.', 'file'));
+        btn('Enviar aos inscritos', 'mail', () => { const ps = cursoPessoas(c).filter(p => isEmail(p.email)); if (!ps.length) { toast('Nenhum inscrito com e-mail neste curso.', true); return; } composeMail([{ to: ['comercial@sigemec.com.br'], cc: [], bcc: ps.map(p => p.email), label: m.nome, subject: `Material do curso · ${c.nome}`, body: `Olá,\n\nSegue em anexo o material "${m.nome}" do ${c.nome}.\n\nGuarde este e-mail: o material será usado durante o encontro.` + ASSINATURA }], { tipo: 'Material', anexo: `o arquivo "${m.nome}"` }); }, 'btn-sm'), h('button', { type: 'button', class: 'ibtn', 'aria-label': 'Remover material', onclick: () => { c.materiais = c.materiais.filter(x => x !== m); save(); render(); } }, ic('trash'))))) : empty('Nenhum material.', 'file'));
   }
   function cFin(c) {
     const ps = cursoPessoas(c), cnt = s => ps.filter(p => p.status === s).length;
@@ -600,7 +629,7 @@
     const tot = Math.max(1, pago + val + pre);
     return h('div', { class: 'stack' },
       h('div', { class: 'grid g4' }, kpi('Recebido', brl(pago), cnt('Pago') + ' pagamentos', '#40C965', { to: pago, pre: 'R$ ' }), kpi('A receber (validados)', brl(val), 'Boleto enviado', '#E0A729'), kpi('Em pré-inscrição', brl(pre), 'Aguardando validação', '#39A9DB'), kpi('Isentos', String(ise), 'Clientes com contrato', '#EA6036')),
-      card('Composição da receita', 'Somente os participantes cadastrados no painel.', [addBtn('Registrar pagamento', () => {
+      card('Composição da receita', 'Somente os participantes cadastrados no painel.', [c.turmas.length ? btn('Cobrar pendentes', 'mail', () => openBoleto(c.turmas[0].id), 'btn-sm') : null, btn('Relatório', 'download', () => { S.rf['fin-turma'] = { curso: c.id }; runReport(REPORTS.find(r => r.id === 'fin-turma')); }, 'btn-sm'), addBtn('Registrar pagamento', () => {
         const pend = ps.filter(p => p.status !== 'Pago' && p.status !== 'Isento');
         if (!pend.length) { toast('Não há pagamentos pendentes neste curso.'); return; }
         openForm({ title: 'Registrar pagamento', eyebrow: c.nome, fields: [{ name: 'p', label: 'Participante', type: 'select', options: pend.map(p => [p.id, `${p.nome} · ${p.status}`]), full: true }, { name: 'forma', label: 'Forma', type: 'select', options: ['Boleto', 'PIX', 'Empenho da prefeitura', 'Cartão'] }, { name: 'data', label: 'Data', type: 'date', value: today() }], submit: 'Confirmar pagamento', onSubmit: d => { const p = pend.find(x => x.id === d.p); p.status = 'Pago'; save(); render(); toast(`Pagamento de ${p.nome} registrado (${d.forma}).`); } });
@@ -749,6 +778,223 @@
       h('div', { class: 'people' }, db.depos.map((d, i) => h('div', { class: 'person', style: `--c:#0F2744;animation-delay:${i * 40}ms` }, h('span', { class: 'av', style: 'color:var(--gold)', text: ini(d.nome) }), h('div', { style: 'flex:1;min-width:0' }, h('b', { text: d.nome }), h('small', { text: d.mun })), sw('', d.on, v => { d.on = v; dirty(); render(); })))));
   }
   function addDepo() { openForm({ title: 'Novo depoimento', eyebrow: 'Conteúdo · Depoimentos', fields: [{ name: 'nome', label: 'Nome', required: true }, { name: 'cargo', label: 'Cargo' }, { name: 'mun', label: 'Município/UF', required: true, full: true }, { name: 'texto', label: 'Depoimento', type: 'textarea', required: true }, { name: 'foto', label: 'Foto do município (opcional)', type: 'file', accept: 'image/*' }], onSubmit: d => { db.depos.unshift({ id: uid(), nome: d.nome, cargo: d.cargo, mun: d.mun, texto: d.texto, on: true }); S.sub = 'depo'; dirty(); render(); toast('Depoimento adicionado.'); } }); }
+
+  /* =================== E-MAIL ===================
+     O painel não envia e-mail sozinho: monta a mensagem e abre no app de e-mail, no Gmail ou no Outlook.
+     A equipe anexa o arquivo (boleto, proposta, certificado) e envia de lá. */
+  const ASSINATURA = '\n\nEquipe SIGEMEC\ncomercial@sigemec.com.br · (61) 99349-1280';
+  const splitMails = v => String(v || '').split(/[\s,;]+/).map(s => s.trim()).filter(Boolean);
+  function mailUrls(m) {
+    const q = o => Object.entries(o).filter(([, v]) => v).map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
+    const to = m.to.join(','), cc = m.cc.join(','), bcc = m.bcc.join(',');
+    return {
+      app: 'mailto:' + to + '?' + q({ cc, bcc, subject: m.subject, body: m.body }),
+      gmail: 'https://mail.google.com/mail/?' + q({ view: 'cm', fs: '1', to, cc, bcc, su: m.subject, body: m.body }),
+      outlook: 'https://outlook.office.com/mail/deeplink/compose?' + q({ to, cc, bcc, subject: m.subject, body: m.body })
+    };
+  }
+  /* queue: [{ to, cc, bcc, subject, body, label, onSent }] — várias mensagens são abertas uma por vez */
+  function composeMail(queue, { tipo = 'E-mail', anexo = '' } = {}) {
+    let i = 0;
+    const draw = () => {
+      const m = queue[i];
+      const fTo = h('input', { value: m.to.join(', '), placeholder: 'email@exemplo.com', autocomplete: 'off' });
+      const fCc = h('input', { value: (m.cc || []).join(', '), autocomplete: 'off' });
+      const fBcc = h('input', { value: (m.bcc || []).join(', '), autocomplete: 'off' });
+      const fSub = h('input', { value: m.subject, maxlength: 250 });
+      const fBody = h('textarea', { style: 'min-height:220px;font-size:14px', maxlength: 6000 }, m.body);
+      const err = h('em', { hidden: true });
+      const read = () => {
+        const msg = { to: splitMails(fTo.value), cc: splitMails(fCc.value), bcc: splitMails(fBcc.value), subject: fSub.value.trim(), body: fBody.value };
+        const all = [...msg.to, ...msg.cc, ...msg.bcc], bad = all.filter(x => !isEmail(x));
+        err.hidden = false;
+        if (!all.length) { err.textContent = 'Informe pelo menos um destinatário.'; return null; }
+        if (bad.length) { err.textContent = 'E-mail inválido: ' + bad.join(', '); return null; }
+        if (!msg.subject) { err.textContent = 'Informe o assunto.'; return null; }
+        err.hidden = true; return msg;
+      };
+      const done = (msg, via) => {
+        db.envios.unshift({ data: nowBR(), tipo, via, para: [...msg.to, ...msg.cc, ...msg.bcc].join(', '), assunto: msg.subject, ref: m.label || '' });
+        if (m.onSent) m.onSent(msg);
+        save();
+        toast(anexo ? `Mensagem aberta (${via}). Anexe ${anexo} e envie.` : `Mensagem aberta (${via}).`);
+        if (++i < queue.length) draw(); else { modal.close(); render(); }
+      };
+      const open = via => () => {
+        const msg = read(); if (!msg) return;
+        const u = mailUrls(msg);
+        if (via === 'app') { const a = h('a', { href: u.app }); document.body.append(a); a.click(); a.remove(); done(msg, 'app de e-mail'); }
+        else { window.open(u[via], '_blank', 'noopener,noreferrer'); done(msg, via === 'gmail' ? 'Gmail' : 'Outlook'); }
+      };
+      const copy = () => { const msg = read(); if (!msg) return; const txt = `Para: ${msg.to.join(', ')}${msg.bcc.length ? '\nCco: ' + msg.bcc.join(', ') : ''}\nAssunto: ${msg.subject}\n\n${msg.body}`; (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => toast('Mensagem copiada.'), () => toast('Não foi possível copiar neste navegador.', true)); };
+      const field = (label, ctl, full = true) => h('label', { class: 'f' + (full ? ' full' : '') }, h('span', { text: label }), ctl);
+      openModal(queue.length > 1 ? `Mensagem ${i + 1} de ${queue.length}` : 'Escrever e-mail', tipo + (m.label ? ' · ' + m.label : ''), h('div', { class: 'm-form' },
+        anexo ? h('div', { class: 'hint full', style: 'display:flex;gap:10px;align-items:center' }, ic('file'), h('span', null, 'Anexe ', h('b', { text: anexo }), ' no e-mail antes de enviar. O painel prepara a mensagem; o arquivo vai pelo seu e-mail.')) : null,
+        field('Para', fTo), field('Cópia (Cc)', fCc, false), field('Cópia oculta (Cco)', fBcc, false), field('Assunto', fSub), field('Mensagem', fBody),
+        h('div', { class: 'full' }, err),
+        h('div', { class: 'm-acts', style: 'flex-wrap:wrap' },
+          queue.length > 1 ? h('button', { type: 'button', class: 'btn btn-ghost', style: 'margin-right:auto', onclick: () => { if (++i < queue.length) draw(); else modal.close(); } }, 'Pular') : null,
+          h('button', { type: 'button', class: 'btn', onclick: copy }, ic('copy'), 'Copiar'),
+          h('button', { type: 'button', class: 'btn', onclick: open('outlook') }, 'Outlook'),
+          h('button', { type: 'button', class: 'btn', onclick: open('gmail') }, 'Gmail'),
+          h('button', { type: 'button', class: 'btn btn-ink', onclick: open('app') }, ic('mail'), 'Abrir no app de e-mail'))));
+    };
+    draw();
+  }
+
+  /* ---------- boletos: por participante ou por município ---------- */
+  const finEmail = mun => db.finEmails[mun] || `financeiro@${slug(mun)}.example`;
+  const primeiro = n => String(n).split(' ')[0];
+  function openBoleto(turmaId, preSel) {
+    const B = { turma: turmaId || S.turma || allTurmas()[0].id, modo: 'pessoa', pend: true, fmt: 'um', sel: new Set(preSel ? [preSel] : []) };
+    const draw = () => {
+      const t = turmaById(B.turma), c = t.curso;
+      const ps = db.pessoas.filter(p => p.turma === t.id && p.status !== 'Isento' && (!B.pend || p.status !== 'Pago'));
+      const muns = [...new Set(ps.map(p => p.mun))].map(mun => ({ mun, ps: ps.filter(p => p.mun === mun) }));
+      const items = B.modo === 'pessoa' ? ps.map(p => p.id) : muns.map(m => m.mun);
+      [...B.sel].forEach(k => { if (!items.includes(k)) B.sel.delete(k); });
+      const qtd = B.modo === 'pessoa' ? B.sel.size : muns.filter(m => B.sel.has(m.mun)).reduce((s, m) => s + m.ps.length, 0);
+      const toggle = k => e => { if (e.target.checked) B.sel.add(k); else B.sel.delete(k); draw(); };
+      const row = (k, main, sub, right, extra) => h('div', { class: 'att' }, h('input', { type: 'checkbox', checked: B.sel.has(k), onchange: toggle(k), 'aria-label': 'Selecionar ' + main, style: 'width:20px;height:20px;accent-color:var(--gold)' }),
+        h('span', null, h('b', { text: main }), h('small', { text: sub }), extra || null), right);
+      const list = B.modo === 'pessoa'
+        ? ps.map(p => row(p.id, p.nome, `${p.mun} · ${p.email}`, h('span', { class: 'acts' }, p.boleto ? h('span', { class: 'pill p-info', text: 'Enviado ' + dBR(p.boleto).slice(0, 5) }) : null, h('span', { class: 'pill ' + PSC[p.status], text: p.status }))))
+        : muns.map(m => row(m.mun, m.mun, `${m.ps.length} participante(s) · ${brl2(m.ps.length * c.preco)}`, null,
+          h('input', { class: 'inp', style: 'margin-top:6px;min-height:38px;font-size:13.5px;font-weight:500', value: finEmail(m.mun), 'aria-label': 'E-mail do financeiro de ' + m.mun, onchange: e => { db.finEmails[m.mun] = e.target.value.trim(); save(); } })));
+      const body = h('div', { class: 'm-form' },
+        h('label', { class: 'f full' }, h('span', { text: 'Turma' }), h('select', { onchange: e => { B.turma = e.target.value; B.sel.clear(); draw(); } }, allTurmas().map(x => h('option', { value: x.id, text: `${x.curso.nome} · ${turmaLabel(x)}`, selected: x.id === B.turma || null })))),
+        h('div', { class: 'full chips' }, chip('Por participante', B.modo === 'pessoa', () => { B.modo = 'pessoa'; B.sel.clear(); draw(); }), chip('Por município', B.modo === 'mun', () => { B.modo = 'mun'; B.sel.clear(); draw(); }),
+          h('label', { class: 'sw', style: 'margin-left:auto' }, h('input', { type: 'checkbox', checked: B.pend, onchange: e => { B.pend = e.target.checked; draw(); } }), h('i'), h('span', { text: 'Só quem não pagou' }))),
+        h('div', { class: 'full card', style: 'padding:6px 14px;max-height:340px;overflow-y:auto' },
+          items.length ? h('div', null, h('div', { class: 'att', style: 'border-top:0' }, h('input', { type: 'checkbox', checked: items.length && items.every(k => B.sel.has(k)), onchange: e => { items.forEach(k => e.target.checked ? B.sel.add(k) : B.sel.delete(k)); draw(); }, 'aria-label': 'Selecionar todos', style: 'width:20px;height:20px;accent-color:var(--gold)' }), h('span', null, h('b', { text: 'Selecionar todos' }), h('small', { text: `${items.length} ${B.modo === 'pessoa' ? 'participante(s)' : 'município(s)'}` }))), list)
+            : empty('Ninguém com boleto pendente nesta turma.', 'check')),
+        B.modo === 'pessoa' ? h('label', { class: 'f full' }, h('span', { text: 'Formato' }), h('select', { onchange: e => { B.fmt = e.target.value; } }, [['um', 'Um e-mail por participante (boleto individual)'], ['cco', 'Um e-mail só, com todos em cópia oculta']].map(([v, l]) => h('option', { value: v, text: l, selected: B.fmt === v || null })))) : null,
+        h('div', { class: 'm-acts', style: 'justify-content:space-between;align-items:center' }, h('span', { style: 'font-size:14px;color:var(--body)' }, h('b', { style: 'color:var(--ink)', text: `${qtd} participante(s)` }), ` · ${brl2(qtd * c.preco)}`),
+          h('button', { type: 'button', class: 'btn btn-ink', disabled: !B.sel.size || null, onclick: () => compose(t, c, ps, muns) }, ic('mail'), 'Escrever e-mail')));
+      openModal('Enviar boletos por e-mail', 'Inscrições · boletos', body);
+    };
+    const compose = (t, c, ps, muns) => {
+      const assunto = `Boleto de inscrição · ${c.nome} · ${t.cidade}/${t.uf}`;
+      const quando = `${t.cidade}/${t.uf}, ${dBR(t.data)}${t.local ? ' · ' + t.local : ''}`;
+      const marca = list => () => { list.forEach(p => { p.boleto = today(); if (p.status === 'Pré-inscrito') p.status = 'Validado'; }); };
+      let q;
+      if (B.modo === 'pessoa') {
+        const sel = ps.filter(p => B.sel.has(p.id));
+        q = B.fmt === 'cco'
+          ? [{ to: ['comercial@sigemec.com.br'], cc: [], bcc: sel.map(p => p.email), subject: assunto, label: `${sel.length} participantes`, onSent: marca(sel),
+            body: `Olá,\n\nSegue em anexo o boleto da sua inscrição no ${c.nome} (${quando}).\n\nValor por participante: ${brl2(c.preco)}\nPagamento até a data do encontro.\n\nDepois do pagamento, a inscrição é confirmada e você recebe o link do grupo da turma.\n\nQualquer dúvida, é só responder este e-mail.` + ASSINATURA }]
+          : sel.map(p => ({ to: [p.email], cc: [], bcc: [], subject: assunto, label: p.nome, onSent: marca([p]),
+            body: `Olá, ${primeiro(p.nome)},\n\nSegue em anexo o boleto da sua inscrição no ${c.nome} (${quando}).\n\nParticipante: ${p.nome} · CPF ${p.cpf}\nValor: ${brl2(c.preco)}\nPagamento até a data do encontro.\n\nDepois do pagamento, a inscrição é confirmada e você recebe o link do grupo da turma.\n\nQualquer dúvida, é só responder este e-mail.` + ASSINATURA }));
+      } else {
+        q = muns.filter(m => B.sel.has(m.mun)).map(m => ({ to: [finEmail(m.mun)], cc: m.ps.map(p => p.email), bcc: [], subject: `${assunto} · ${m.mun}`, label: m.mun, onSent: marca(m.ps),
+          body: `Prezados,\n\nSeguem em anexo os boletos das inscrições de ${m.mun} no ${c.nome} (${quando}).\n\n${m.ps.map((p, k) => `${k + 1}. ${p.nome} · ${p.funcao} · CPF ${p.cpf} · ${brl2(c.preco)}`).join('\n')}\n\nTotal: ${brl2(m.ps.length * c.preco)} (${m.ps.length} participante${m.ps.length > 1 ? 's' : ''})\nPagamento até a data do encontro. Se a prefeitura preferir empenho, responda com a nota de empenho que emitimos a nota fiscal.\n\nQualquer dúvida, é só responder este e-mail.` + ASSINATURA }));
+      }
+      composeMail(q, { tipo: 'Boleto', anexo: B.modo === 'mun' || B.fmt === 'cco' ? 'os boletos (PDF)' : 'o boleto (PDF)' });
+    };
+    draw();
+  }
+
+  /* =================== RELATÓRIOS (planilhas CSV) =================== */
+  const turmaOpts = () => [['', 'Todas as turmas'], ...allTurmas().map(t => [t.id, `${t.curso.nome} · ${turmaLabel(t)}`])];
+  const cursoOpts = () => [['', 'Todos os cursos'], ...db.cursos.map(c => [c.id, c.nome])];
+  const freqDe = p => { const t = turmaById(p.turma); const n = t && t.curso.dias.length || 1; return Math.round(Object.values(p.pres || {}).filter(Boolean).length / n * 100); };
+  const pessoasF = f => db.pessoas.filter(p => (!f.turma || p.turma === f.turma) && (!f.curso || (turmaById(p.turma) || {}).curso?.id === f.curso) && (!f.status || p.status === f.status));
+  const AREAS = [['pedidos', 'Pedidos', '#39A9DB'], ['inscricoes', 'Inscrições', '#EA6036'], ['financeiro', 'Financeiro', '#40C965'], ['cursos', 'Cursos', '#B07E10'], ['conteudo', 'Conteúdo do site', '#1E7FAE'], ['envios', 'E-mails', '#33404F']];
+  const REPORTS = [
+    { id: 'ped-geral', area: 'pedidos', nome: 'Pedidos recebidos', desc: 'Todos os pedidos com contato, módulos, urgência e situação.',
+      filtros: [{ k: 'status', label: 'Situação', opts: () => [['', 'Todas'], ...Object.entries(ST)] }],
+      cols: ['Data', 'Município', 'UF', 'Órgão', 'Tipo', 'Responsável', 'Cargo', 'E-mail', 'Módulos', 'Urgência', 'População', 'Situação', 'Última anotação'],
+      rows: f => db.pedidos.filter(p => !f.status || p.status === f.status).map(p => [dBR(p.data), p.mun.split('/')[0], p.mun.split('/')[1] || '', p.orgao, p.tipo, p.resp, p.cargo, p.email, p.mods.join(', '), p.urg, p.pop, ST[p.status], p.notas[0] ? p.notas[0].txt : '']) },
+    { id: 'ped-modulo', area: 'pedidos', nome: 'Funil por módulo', desc: 'Quantos pedidos cada módulo recebeu e quantos viraram contrato.',
+      cols: ['Módulo', 'Pedidos', 'Novos', 'Em contato', 'Proposta enviada', 'Contrato fechado', 'Taxa de fechamento'],
+      rows: () => Object.keys(MOD).map(m => { const l = db.pedidos.filter(p => p.mods.includes(m)), n = s => l.filter(p => p.status === s).length; return [m, l.length, n('novo'), n('contato'), n('proposta'), n('fechado'), l.length ? Math.round(n('fechado') / l.length * 100) + '%' : '0%']; }) },
+    { id: 'ped-uf', area: 'pedidos', nome: 'Pedidos por estado', desc: 'Distribuição geográfica dos pedidos.',
+      cols: ['UF', 'Pedidos', 'Contratos fechados', 'Municípios'],
+      rows: () => [...new Set(db.pedidos.map(p => p.mun.split('/')[1]))].sort().map(uf => { const l = db.pedidos.filter(p => p.mun.endsWith('/' + uf)); return [uf, l.length, l.filter(p => p.status === 'fechado').length, [...new Set(l.map(p => p.mun.split('/')[0]))].join(', ')]; }) },
+    { id: 'ins-lista', area: 'inscricoes', nome: 'Lista de inscritos', desc: 'Participantes por turma, com função, contato e situação do pagamento.',
+      filtros: [{ k: 'turma', label: 'Turma', opts: turmaOpts }, { k: 'status', label: 'Situação', opts: () => [['', 'Todas'], ...PS.map(s => [s, s])] }],
+      cols: ['Curso', 'Turma', 'Data', 'Participante', 'CPF', 'Função', 'Município', 'E-mail', 'Pagador', 'Situação', 'Boleto enviado em'],
+      rows: f => pessoasF(f).map(p => { const t = turmaById(p.turma) || { curso: {} }; return [t.curso.nome, `${t.cidade}/${t.uf}`, dBR(t.data), p.nome, p.cpf, p.funcao, p.mun, p.email, p.pagador, p.status, p.boleto ? dBR(p.boleto) : '']; }) },
+    { id: 'ins-mun', area: 'inscricoes', nome: 'Inscrições por município', desc: 'Quantos participantes cada prefeitura inscreveu e quanto deve.',
+      filtros: [{ k: 'turma', label: 'Turma', opts: turmaOpts }],
+      cols: ['Município', 'Curso', 'Turma', 'Participantes', 'Pagos', 'Pendentes', 'Isentos', 'Valor previsto', 'Valor recebido', 'E-mail do financeiro'],
+      rows: f => { const out = []; allTurmas().filter(t => !f.turma || t.id === f.turma).forEach(t => { const ps = db.pessoas.filter(p => p.turma === t.id); [...new Set(ps.map(p => p.mun))].forEach(m => { const l = ps.filter(p => p.mun === m), n = s => l.filter(p => p.status === s).length; out.push([m, t.curso.nome, `${t.cidade}/${t.uf} ${dBR(t.data)}`, l.length, n('Pago'), l.length - n('Pago') - n('Isento'), n('Isento'), brl2((l.length - n('Isento')) * t.curso.preco), brl2(n('Pago') * t.curso.preco), finEmail(m)]); }); }); return out; } },
+    { id: 'fin-turma', area: 'financeiro', nome: 'Resumo financeiro por turma', desc: 'Vagas, inscritos, pagos e valores previstos e recebidos.',
+      filtros: [{ k: 'curso', label: 'Curso', opts: cursoOpts }],
+      cols: ['Curso', 'Turma', 'Data', 'Vagas', 'Inscritos', 'Pagos', 'Validados', 'Pré-inscritos', 'Isentos', 'Previsto', 'Recebido', 'A receber'],
+      rows: f => allTurmas().filter(t => !f.curso || t.curso.id === f.curso).map(t => { const l = db.pessoas.filter(p => p.turma === t.id), n = s => l.filter(p => p.status === s).length, pr = t.curso.preco; return [t.curso.nome, `${t.cidade}/${t.uf}`, dBR(t.data), t.vagas, inscritos(t), n('Pago'), n('Validado'), n('Pré-inscrito'), n('Isento'), brl2((inscritos(t) - n('Isento')) * pr), brl2(n('Pago') * pr), brl2((n('Validado') + n('Pré-inscrito')) * pr)]; }) },
+    { id: 'fin-boletos', area: 'financeiro', nome: 'Controle de boletos', desc: 'Quem já recebeu boleto, quanto vale e se pagou.',
+      filtros: [{ k: 'turma', label: 'Turma', opts: turmaOpts }],
+      cols: ['Participante', 'Município', 'Curso', 'Turma', 'Valor', 'Situação', 'Boleto enviado em', 'E-mail'],
+      rows: f => pessoasF(f).filter(p => p.status !== 'Isento').map(p => { const t = turmaById(p.turma); return [p.nome, p.mun, t.curso.nome, `${t.cidade}/${t.uf}`, brl2(t.curso.preco), p.status, p.boleto ? dBR(p.boleto) : 'Não enviado', p.email]; }) },
+    { id: 'cur-presenca', area: 'cursos', nome: 'Lista de presença', desc: 'Presença por dia e frequência de cada participante.',
+      filtros: [{ k: 'turma', label: 'Turma', opts: turmaOpts }],
+      cols: f => { const t = f.turma ? turmaById(f.turma) : null, n = t ? Math.max(1, t.curso.dias.length) : 3; return ['Turma', 'Participante', 'CPF', 'Município', ...Array.from({ length: n }, (_, i) => 'Dia ' + (i + 1)), 'Frequência']; },
+      rows: f => { const t = f.turma ? turmaById(f.turma) : null, n = t ? Math.max(1, t.curso.dias.length) : 3; return pessoasF(f).map(p => { const tt = turmaById(p.turma); return [`${tt.cidade}/${tt.uf} ${dBR(tt.data)}`, p.nome, p.cpf, p.mun, ...Array.from({ length: n }, (_, i) => i < Math.max(1, tt.curso.dias.length) ? (p.pres && p.pres[i] ? 'Presente' : 'Ausente') : ''), freqDe(p) + '%']; }); } },
+    { id: 'cur-cert', area: 'cursos', nome: 'Certificados', desc: 'Frequência, situação da inscrição e certificado emitido.',
+      filtros: [{ k: 'curso', label: 'Curso', opts: cursoOpts }],
+      cols: ['Participante', 'CPF', 'Curso', 'Carga horária', 'Turma', 'Frequência', 'Inscrição', 'Certificado'],
+      rows: f => pessoasF(f).map(p => { const t = turmaById(p.turma); return [p.nome, p.cpf, t.curso.nome, t.curso.carga, `${t.cidade}/${t.uf}`, freqDe(p) + '%', p.status, p.cert ? 'Emitido' : 'Pendente']; }) },
+    { id: 'cur-prog', area: 'cursos', nome: 'Programação dos cursos', desc: 'Dias, horários, sessões e palestrantes.',
+      filtros: [{ k: 'curso', label: 'Curso', opts: cursoOpts }],
+      cols: ['Curso', 'Dia', 'Horário', 'Sessão', 'Palestrante'],
+      rows: f => db.cursos.filter(c => !f.curso || c.id === f.curso).flatMap(c => c.dias.flatMap(d => d.sessoes.slice().sort((a, b) => a.hora.localeCompare(b.hora)).map(s => [c.nome, d.titulo, s.hora, s.titulo, s.quem]))) },
+    { id: 'con-projetos', area: 'conteudo', nome: 'Projetos contemplados', desc: 'Os projetos mostrados na página inicial.',
+      cols: ['Município', 'UF', 'Programa', 'Valor pago', 'Pago em'],
+      rows: () => db.projetos.map(p => [p.mun.split('/')[0], p.mun.split('/')[1] || '', p.prog, brl2(p.valor), dBR(p.pago)]) },
+    { id: 'con-eventos', area: 'conteudo', nome: 'Eventos', desc: 'Agenda de eventos do site, publicados e rascunhos.',
+      cols: ['Data', 'Evento', 'Cidade', 'Curso vinculado', 'Situação', 'Descrição'],
+      rows: () => db.eventos.slice().sort((a, b) => a.data.localeCompare(b.data)).map(e => [dBR(e.data), e.titulo, e.cidade, (db.cursos.find(c => c.id === e.curso) || {}).nome || '', e.status, e.desc]) },
+    { id: 'con-secoes', area: 'conteudo', nome: 'Mapa das páginas', desc: 'Seções de cada página, na ordem em que aparecem.',
+      cols: ['Página', 'Ordem', 'Seção', 'Tipo', 'Visível'],
+      rows: () => { const c = {}; return db.secoes.map(s => [s.pagina, (c[s.pagina] = (c[s.pagina] || 0) + 1), s.titulo, s.tipo, s.visivel ? 'Sim' : 'Não']); } },
+    { id: 'con-fotos', area: 'conteudo', nome: 'Galeria de fotos', desc: 'Fotos por álbum, com legenda e capa.',
+      cols: ['Álbum', 'Legenda', 'Capa'],
+      rows: () => db.fotos.map(f => [f.album, f.leg, f.capa ? 'Sim' : '']) },
+    { id: 'env-hist', area: 'envios', nome: 'Histórico de e-mails', desc: 'Mensagens preparadas pelo painel: boletos, propostas, materiais e certificados.',
+      cols: ['Data', 'Tipo', 'Referência', 'Aberto em', 'Para', 'Assunto'],
+      rows: () => db.envios.map(e => [e.data, e.tipo, e.ref, e.via, e.para, e.assunto]) }
+  ];
+  S.rf = {}; S.rArea = '';
+  const rCols = (r, f) => typeof r.cols === 'function' ? r.cols(f) : r.cols;
+  function runReport(r) {
+    const f = S.rf[r.id] || {};
+    const rows = r.rows(f);
+    const stamp = today().split('-').reverse().join('-');
+    csv(`sigemec-${r.id}-${stamp}.csv`, [rCols(r, f), ...rows]);
+  }
+  function previewReport(r) {
+    const f = S.rf[r.id] || {}, cols = rCols(r, f), rows = r.rows(f);
+    openModal(r.nome, `Relatório · ${rows.length} linha(s)`, h('div', { class: 'm-form' },
+      h('div', { class: 'full tbl-wrap card', style: 'padding:6px' }, rows.length ? h('table', { class: 'tbl', style: `min-width:${Math.max(560, cols.length * 120)}px` }, h('thead', null, h('tr', null, cols.map(c => h('th', { text: c })))), h('tbody', null, rows.slice(0, 8).map(rw => h('tr', null, rw.map(v => h('td', { text: String(v ?? '') }))))))
+        : empty('Sem dados para esses filtros.', 'file')),
+      rows.length > 8 ? h('p', { class: 'full', style: 'margin:0;font-size:13px;color:var(--body)', text: `Mostrando 8 de ${rows.length} linhas. A planilha traz todas.` }) : null,
+      h('div', { class: 'm-acts' }, h('button', { type: 'button', class: 'btn btn-ghost', text: 'Fechar', onclick: () => modal.close() }), h('button', { type: 'button', class: 'btn btn-ink', onclick: () => { runReport(r); modal.close(); } }, ic('download'), 'Baixar CSV'))));
+  }
+  function reportCard(r, i) {
+    const f = S.rf[r.id] = S.rf[r.id] || {};
+    const area = AREAS.find(a => a[0] === r.area);
+    return h('article', { class: 'ev', style: `--c:${area[2]};animation-delay:${i * 30}ms` },
+      h('div', { class: 'row' }, h('span', { class: 'mod', style: `--c:${area[2]}` }, h('i'), area[1]), h('span', { style: 'font-size:12.5px;color:var(--body)', text: `${r.rows(f).length} linha(s)` })),
+      h('h3', { text: r.nome }), h('p', { text: r.desc }),
+      h('div', { class: 'mods' }, rCols(r, f).map(c => h('span', { class: 'mod', style: 'background:#fff;border:1px solid var(--line);font-weight:500', text: c }))),
+      (r.filtros || []).map(fl => h('label', { class: 'lbl-f' }, fl.label, h('select', { class: 'inp', style: 'min-height:40px;font-size:14px;font-weight:500', onchange: e => { f[fl.k] = e.target.value; render(); } }, fl.opts().map(([v, l]) => h('option', { value: v, text: l, selected: (f[fl.k] || '') === v || null }))))),
+      h('div', { class: 'acts', style: 'margin-top:auto' }, btn('Visualizar', 'search', () => previewReport(r), 'btn-sm'), btn('Gerar CSV', 'download', () => runReport(r), 'btn-sm btn-ink')));
+  }
+  function relatorios() {
+    const list = REPORTS.filter(r => !S.rArea || r.area === S.rArea);
+    return [
+      head('Painel de controle', 'Relatórios', 'Planilhas prontas para cada área. Escolha os filtros, visualize e baixe em CSV (abre no Excel e no Google Planilhas).', null),
+      h('div', { class: 'chips', style: 'margin-bottom:14px' }, chip('Todas as áreas', !S.rArea, () => { S.rArea = ''; render(); }, REPORTS.length), AREAS.map(([id, l, c]) => chip(l, S.rArea === id, () => { S.rArea = id; render(); }, REPORTS.filter(r => r.area === id).length, c))),
+      h('div', { class: 'grid g3' }, list.map(reportCard))
+    ];
+  }
+  /* botão "Exportar planilha" de cada tela: mostra os relatórios daquela área */
+  function exportArea(areas) {
+    const list = REPORTS.filter(r => areas.includes(r.area));
+    openModal('Exportar planilha', 'Relatórios', h('div', { class: 'qadd' }, list.map(r => h('button', { type: 'button', style: `--c:${AREAS.find(a => a[0] === r.area)[2]}`, onclick: () => { if (r.filtros) { modal.close(); go('relatorios', { rArea: r.area }); toast('Escolha os filtros e gere a planilha.'); } else { runReport(r); modal.close(); } } }, ic('download'), r.nome, h('small', { text: r.desc }))),
+      h('button', { type: 'button', style: '--c:var(--ink)', onclick: () => { modal.close(); go('relatorios'); } }, ic('file'), 'Todos os relatórios', h('small', { text: 'Abrir a central de relatórios' }))));
+  }
 
   /* =================== LOGIN =================== */
   function startApp(welcomeName) {

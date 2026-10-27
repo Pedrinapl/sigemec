@@ -482,3 +482,7 @@ button.pill{cursor:pointer;min-height:32px}
 .s-nav em{flex-shrink:0}
 .toasts{bottom:96px}
 .bar{grid-template-columns:minmax(110px,36%) minmax(0,1fr) 52px}
+/* e-mail e relatórios */
+.m-form .hint{margin:0}
+.ev .mods .mod{font-size:11.5px}
+.ev .lbl-f select{width:100%}
