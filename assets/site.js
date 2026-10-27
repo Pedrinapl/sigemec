@@ -11,12 +11,12 @@ const FORM_HOSTS = ["formspree.io"];
 
 /* Números do grupo: alimentam o hero e os contadores (data-ind / data-count). */
 const INDICADORES = {
-  recursos:  { valor: 2.5, dec: 1, texto: "R$ 2,5 bi" },
-  estados:   { valor: 18 },
-  municipios:{ valor: 500 },
-  tecnicos:  { valor: 15000 },
-  cursos:    { valor: 150 },
-  satisfacao:{ valor: 98 }
+  recursos:  { valor: 2, texto: "+R$ 2 bi" },  /* ISTOÉ, 12/06/2024: "mais de 2 bilhões de reais" */
+  estados:   { valor: 17 },                    /* ISTOÉ: clientes em 17 estados */
+  municipios:{ valor: 250 },                   /* ISTOÉ: mais de 250 municípios */
+  tecnicos:  { valor: 3000 },
+  anos:      { valor: 10 },                    /* desde 2016 */
+  projetos:  { valor: 18 }                     /* projetos de Educação Infantil pagos (edercarlosdalberto.com.br) */
 };
 
 /* Projetos contemplados: valor pago e data do pagamento. */
@@ -24,17 +24,23 @@ const PROJETOS = [
   { municipio: "Aquiraz", uf: "CE", programa: "Projeto de Educação Infantil", valor: 2254852.64, pago: "01/04/2024" },
   { municipio: "Monteiro", uf: "PB", programa: "Projeto de Educação Infantil", valor: 1624843.94, pago: "01/04/2024" },
   { municipio: "Anajatuba", uf: "MA", programa: "Projeto de Educação Infantil", valor: 1617679.18, pago: "01/04/2024" },
+  { municipio: "Palmeira", uf: "PR", programa: "Projeto de Educação Infantil", valor: 1479877.51, pago: "01/04/2024" },
   { municipio: "Nova Mamoré", uf: "RO", programa: "Projeto de Educação Infantil", valor: 1380194.14, pago: "01/04/2024" },
   { municipio: "Cacoal", uf: "RO", programa: "Projeto de Educação Infantil", valor: 1310815.36, pago: "01/04/2024" },
   { municipio: "Pimenta Bueno", uf: "RO", programa: "Projeto de Educação Infantil", valor: 1304173.00, pago: "01/04/2024" },
   { municipio: "Novo Oriente", uf: "CE", programa: "Projeto de Educação Infantil", valor: 982243.04, pago: "01/04/2024" },
   { municipio: "Cururupu", uf: "MA", programa: "Projeto de Educação Infantil", valor: 950288.80, pago: "01/04/2024" },
+  { municipio: "Lajeado", uf: "RS", programa: "Projeto de Educação Infantil", valor: 801915.99, pago: "01/04/2024" },
+  { municipio: "Chapadão do Céu", uf: "GO", programa: "Projeto de Educação Infantil", valor: 640039.04, pago: "01/04/2024" },
+  { municipio: "Barro", uf: "CE", programa: "Projeto de Educação Infantil", valor: 523336.19, pago: "01/04/2024" },
+  { municipio: "Corumbiara", uf: "RO", programa: "Projeto de Educação Infantil", valor: 502757.01, pago: "01/04/2024" },
+  { municipio: "Uauá", uf: "BA", programa: "Projeto de Educação Infantil", valor: 465636.44, pago: "01/04/2024" },
   { municipio: "Novo Horizonte do Oeste", uf: "RO", programa: "Projeto de Educação Infantil", valor: 372596.09, pago: "01/04/2024" },
   { municipio: "Cujubim", uf: "RO", programa: "Projeto de Educação Infantil", valor: 265054.59, pago: "01/04/2024" },
   { municipio: "Bernardino Batista", uf: "PB", programa: "Projeto de Educação Infantil", valor: 214648.80, pago: "01/04/2024" },
   { municipio: "Poço de José de Moura", uf: "PB", programa: "Projeto de Educação Infantil", valor: 152390.25, pago: "01/04/2024" }
 ];
-const NOMES_UF = { CE: "Ceará", MA: "Maranhão", PB: "Paraíba", RO: "Rondônia" };
+const NOMES_UF = { BA: "Bahia", CE: "Ceará", GO: "Goiás", MA: "Maranhão", PB: "Paraíba", PR: "Paraná", RO: "Rondônia", RS: "Rio Grande do Sul" };
 
 /* Turmas dos encontros técnicos.
    status: "confirmada" → origem "Inscrição curso" · "em formação" → origem "Interesse curso" */

@@ -7,7 +7,7 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const NS = 'http://www.w3.org/2000/svg';
-  const KEY = 'sgm-painel-v3';
+  const KEY = 'sgm-painel-v4';
   const AUTH = 'sgm-painel-auth';
   const DEMO_CODE = '246810';
 
@@ -169,10 +169,10 @@
         ['Treinamentos', 'Próximo encontro', 'Destaque'], ['Treinamentos', 'Como funciona a inscrição', 'Passos'], ['Treinamentos', 'Encontros e turmas', 'Cartões'], ['Treinamentos', 'Fotos dos encontros', 'Galeria'], ['Treinamentos', 'Pré-inscrição', 'Formulário'],
         ['Sobre nós', 'O que fazemos', 'Texto'], ['Sobre nós', 'O que muda para quem trabalha com a gente', 'Antes e depois'], ['Sobre nós', 'Equipe', 'Cartões'], ['Sobre nós', 'Como trabalhamos', 'Texto']
       ].map(([pagina, titulo, tipo]) => ({ id: uid(), pagina, titulo, tipo, visivel: true })),
-      numeros: [['Recursos captados (destaque)', 'R$ 2,5 bi'], ['Municípios atendidos', '500'], ['Estados', '18'], ['Técnicos capacitados', '15000'], ['Cursos realizados', '150'], ['Satisfação nos treinamentos (%)', '98']].map(([label, value]) => ({ id: uid(), label, value })),
-      projetos: [['Aquiraz/CE', 2254852.64], ['Monteiro/PB', 1624843.94], ['Anajatuba/MA', 1617679.18], ['Nova Mamoré/RO', 1380194.14], ['Cacoal/RO', 1310815.36], ['Pimenta Bueno/RO', 1304173], ['Novo Oriente/CE', 982243.04], ['Cururupu/MA', 950288.8], ['Novo Horizonte do Oeste/RO', 372596.09], ['Cujubim/RO', 265054.59], ['Bernardino Batista/PB', 214648.8], ['Poço de José de Moura/PB', 152390.25]].map(([mun, valor]) => ({ id: uid(), mun, valor, pago: '2024-04-01', prog: 'Projeto de Educação Infantil' })),
+      numeros: [['Recursos em projetos aprovados e pagos (destaque)', '+R$ 2 bi'], ['Municípios atendidos', '250'], ['Estados', '17'], ['Técnicos capacitados', '3000'], ['Anos de atuação', '10'], ['Projetos de Educação Infantil pagos', '18']].map(([label, value]) => ({ id: uid(), label, value })),
+      projetos: [['Aquiraz/CE', 2254852.64], ['Monteiro/PB', 1624843.94], ['Anajatuba/MA', 1617679.18], ['Nova Mamoré/RO', 1380194.14], ['Cacoal/RO', 1310815.36], ['Pimenta Bueno/RO', 1304173], ['Novo Oriente/CE', 982243.04], ['Cururupu/MA', 950288.8], ['Novo Horizonte do Oeste/RO', 372596.09], ['Cujubim/RO', 265054.59], ['Bernardino Batista/PB', 214648.8], ['Poço de José de Moura/PB', 152390.25], ['Palmeira/PR', 1479877.51], ['Lajeado/RS', 801915.99], ['Chapadão do Céu/GO', 640039.04], ['Barro/CE', 523336.19], ['Corumbiara/RO', 502757.01], ['Uauá/BA', 465636.44]].sort((a, b) => b[1] - a[1]).map(([mun, valor]) => ({ id: uid(), mun, valor, pago: '2024-04-01', prog: 'Projeto de Educação Infantil' })),
       atas: [],
-      depos: [['Luslarlene U. de Souza Fiametti', "Santa Luzia d'Oeste/RO", 'Secretária Municipal de Educação', true], ['Isabel Fonseca', 'Cachoeirinha/RS', 'Secretária de Educação', true], ['Dalva Maria de Carli', 'Santo Antônio da Patrulha/RS', 'Secretária Municipal de Educação', true], ['Gleíza Guerra de Assis Braga', 'Maracanaú/CE', 'Gestora educacional', true], ['Alex Sandro Lima', 'Boa Viagem/CE', 'Secretário Municipal', true], ['Lenilda Campos', 'Frei Miguelinho/PE', 'Secretária Municipal', false]].map(([nome, mun, cargo, on]) => ({ id: uid(), nome, mun, cargo, on, texto: '' })),
+      depos: [['Luslarlene Umbelina de Souza Fiamett', "Santa Luzia d'Oeste/RO", 'Presidente da Undime/RO e Dirigente Municipal de Educação', true], ['Isabel Fonseca', 'Cachoeirinha/RS', 'Secretária de Educação', true], ['Dalva Maria de Carli', 'Santo Antônio da Patrulha/RS', 'Secretária Municipal de Educação', true], ['Gleíza Guerra de Assis Braga', 'Maracanaú/CE', 'Gestora educacional', true], ['Alex Sandro Lima', 'Boa Viagem/CE', 'Secretário Municipal', true], ['Lenilda Campos', 'Frei Miguelinho/PE', 'Secretária Municipal', false]].map(([nome, mun, cargo, on]) => ({ id: uid(), nome, mun, cargo, on, texto: '' })),
       pub: { pend: 0, last: '26/10/2026 às 18:35' }
     };
     d.pedidos.forEach(p => { p.email = p.email.replace('[municipio].gov.br', slug(p.mun) + '.example'); });
