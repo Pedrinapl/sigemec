@@ -13,7 +13,7 @@
   --esc:#40C965;  --esc-deep:#1A6B34;  --esc-tint:#CFF2D9;
   --arm:var(--gold);
 
-  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-display:"Archivo","Arial Narrow","Roboto Condensed","Helvetica Neue",Arial,sans-serif;
   --f-body:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
 
@@ -1009,7 +1009,7 @@ body.menu-open .wa-float,body.menu-open .cookiebar{visibility:hidden}
 }
 
 /* rodapé: palavra gigante sempre inteira */
-.giant{font-size:clamp(48px,13.4vw,250px);gap:0}
+.giant{font-size:clamp(36px,13.2vw,250px);gap:0}
 
 /* toque: alvos de no mínimo 44px */
 @media (pointer:coarse){
@@ -1042,8 +1042,6 @@ body.menu-open .wa-float,body.menu-open .cookiebar{visibility:hidden}
 @media (max-width:1080px){.ft-top>div:first-child{grid-column:1/-1}}
 .nav-in{max-width:calc(var(--wrap) - var(--gutter) - var(--gutter-r))}
 @media (max-width:1099px){.nav-act{margin-left:auto}}
-.rings-label>div,.rings-label{padding:0 26%}
-.rings-label span{max-width:15ch;margin-inline:auto;line-height:1.35;font-size:11.5px}
 
 /* módulos: barra de módulos inteira no celular, tabela com rótulos fixos */
 @media (max-width:560px){
@@ -1064,3 +1062,11 @@ body.menu-open .wa-float,body.menu-open .cookiebar{visibility:hidden}
   .ft-top{grid-template-columns:repeat(4,minmax(0,1fr))}
   .ft-top>div:first-child{grid-column:1/-1}
 }
+
+/* números e títulos grandes: uma linha por número, tamanho proporcional à caixa */
+.stat b{white-space:nowrap}
+.rings{container-type:inline-size}
+.rings-label>div{max-width:52%}
+.rings-label b{white-space:nowrap;font-size:clamp(24px,8.6cqi,60px)}
+.rings-label span{max-width:16ch;margin-inline:auto;line-height:1.35;font-size:clamp(10px,2.1cqi,12.5px)}
+@media (max-width:640px){.sec-head h2,.cta-band h2,.big-say{max-width:none}}

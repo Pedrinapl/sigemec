@@ -895,6 +895,45 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
     }, { once: true });
   });
 
+  /* ---------- títulos e números grandes sempre dentro da coluna ----------
+     Se a largura do texto passa da caixa (tela estreita, fonte que não carregou, número maior),
+     reduz o tamanho só o necessário. Recalcula ao redimensionar e quando as fontes terminam de carregar. */
+  const FIT = '.hero h1,.phero h1,.article h1,.stat b,.module-id .word strong,.sec-head h2,.ct-grid h2,.insc-head h2,.promo h2,.cta-band h2,.suppliers h2,.rings-label b,.big-say,.dlg h2,.ticket .t-top b,.plan .pr,.pain .n,.mq-item b';
+  const overflow = el => {
+    const box = el.getBoundingClientRect(), cs = getComputedStyle(el);
+    const left = box.left + parseFloat(cs.paddingLeft);
+    /* limite: a própria caixa ou a margem do conteúdo da página, o que vier antes */
+    const wrap = el.closest('.wrap'), wr = wrap ? wrap.getBoundingClientRect().right - parseFloat(getComputedStyle(wrap).paddingRight) : document.documentElement.clientWidth;
+    const right = Math.min(box.left + el.clientWidth - parseFloat(cs.paddingRight), wr);
+    const r = document.createRange(); r.selectNodeContents(el);
+    let max = 0; for (const q of r.getClientRects()) max = Math.max(max, q.right);
+    return { over: max - right, avail: right - left, size: parseFloat(cs.fontSize) };
+  };
+  const fitOne = el => {
+    el.style.fontSize = '';
+    if (!el.clientWidth) return;
+    /* repete porque a caixa pode encolher junto com a letra (larguras em ch) e o texto se redistribui nas linhas */
+    for (let i = 0; i < 10; i++) {
+      const m = overflow(el);
+      if (m.over <= 0.5) break;
+      el.style.fontSize = (m.size * Math.min(0.96, m.avail / (m.avail + m.over) * 0.98)) + 'px';
+    }
+  };
+  const fitAll = () => $$(FIT).forEach(el => { if (!el.closest('.mq-row')) fitOne(el); });
+  fitAll();
+  /* a troca de fonte acontece depois dos eventos de carregamento: refaz no quadro seguinte */
+  const fitSoon = () => requestAnimationFrame(() => requestAnimationFrame(fitAll));
+  if (document.fonts) {
+    document.fonts.ready.then(fitSoon);
+    document.fonts.addEventListener('loadingdone', fitSoon);
+    document.fonts.addEventListener('loadingerror', fitSoon);
+  }
+  addEventListener('load', fitSoon);
+  /* nos primeiros segundos, confere se algo passou da caixa (só leitura; ajusta apenas o que estourou) */
+  const fitWatch = setInterval(() => $$(FIT).forEach(el => { if (el.clientWidth && !el.closest('.mq-row') && overflow(el).over > 0.5) fitOne(el); }), 250);
+  setTimeout(() => clearInterval(fitWatch), 8000);
+  let fitT; addEventListener('resize', () => { clearTimeout(fitT); fitT = setTimeout(fitAll, 120); });
+
   /* ---------- cursor ---------- */
   const cur = $('.cursor');
   if (cur && matchMedia('(pointer: fine)').matches && !reduce) {
