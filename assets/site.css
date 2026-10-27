@@ -1067,6 +1067,6 @@ body.menu-open .wa-float,body.menu-open .cookiebar{visibility:hidden}
 .stat b{white-space:nowrap}
 .rings{container-type:inline-size}
 .rings-label>div{max-width:52%}
-.rings-label b{white-space:nowrap;font-size:clamp(24px,8.6cqi,60px)}
+.rings-label b{white-space:nowrap;font-size:clamp(22px,7.2cqi,52px)}
 .rings-label span{max-width:16ch;margin-inline:auto;line-height:1.35;font-size:clamp(10px,2.1cqi,12.5px)}
 @media (max-width:640px){.sec-head h2,.cta-band h2,.big-say{max-width:none}}
