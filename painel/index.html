@@ -2,411 +2,104 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
-<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; connect-src 'none'; form-action 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#081628">
 <title>Painel SIGEMEC</title>
 <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../assets/fonts.css?v=2">
-<link rel="stylesheet" href="painel.css?v=2">
-<script src="painel.js?v=2" defer></script>
+<link rel="preload" href="../assets/fonts/Archivo-4c18bbf2.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/fonts.css?v=42f7b45b">
+<link rel="stylesheet" href="painel.css?v=42f7b45b">
+<script src="painel.js?v=42f7b45b" defer></script>
 </head>
 <body>
-<template id="tpl"><div style="min-height: 100vh; display: flex; flex-wrap: wrap; background: #EDF0F4; color: #0A1525; font-family: 'Hanken Grotesk', 'Helvetica Neue', Arial, sans-serif; font-size: 15px; line-height: 1.45">
 
-  <aside style="flex: 1 1 232px; max-width: 100%; background: #081628; color: #EDF0F4; padding: 24px 14px; display: flex; flex-direction: column; gap: 6px; box-sizing: border-box">
-    <div style="display: flex; align-items: center; gap: 10px; padding: 4px 10px 22px">
-      <svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="none" stroke="#E0A729" stroke-width="7"></circle><circle cx="50" cy="50" r="31" fill="none" stroke="#E0A729" stroke-width="7"></circle><circle cx="50" cy="50" r="18" fill="none" stroke="#E0A729" stroke-width="7"></circle></svg>
-      <div style="display: flex; flex-direction: column">
-        <b style="font-family: Archivo, sans-serif; font-weight: 500; letter-spacing: .14em; font-size: 15px">SIGEMEC</b>
-        <span style="font-size: 12px; color: #93A3B8">Painel do site</span>
+<template id="logo"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="50" cy="50" r="33" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="50" cy="50" r="21" fill="none" stroke="currentColor" stroke-width="6"/><path d="M57 41.5c-1.6-2.6-4.2-3.8-7.2-3.8-3.8 0-6.6 2-6.6 5 0 7.2 14.6 3.6 14.6 11.6 0 3.4-3.2 5.9-7.8 5.9-3.4 0-6.2-1.4-7.8-4.2" fill="none" stroke="currentColor" stroke-width="4.2" stroke-linecap="round"/></svg></template>
+
+<!-- LOGIN -->
+<section class="login" id="login" aria-label="Acesso ao painel" hidden>
+  <div class="l-art">
+    <div class="l-brand" data-logo><div><b>SIGEMEC</b> <small>group</small></div></div>
+    <div class="l-stage">
+      <div class="chip-f" style="--c:var(--esc)"><i></i><span><b data-up="12.43" data-dec="2" data-pre="R$ " data-suf=" mi">R$ 0</b><br>pagos a municípios</span></div>
+      <div class="chip-f" style="--c:var(--sau)"><i></i><span><b data-up="38" data-pre="+">0</b><br>pedidos em 30 dias</span></div>
+      <div class="chip-f" style="--c:var(--edu)"><i></i><span><b data-up="64">0</b><br>inscrições nos encontros</span></div>
+      <div class="chip-f" style="--c:var(--gold)"><i></i><span><b data-up="92" data-suf="%">0</b><br>respondidos em 1 dia útil</span></div>
+      <div class="l-rings" id="lRings">
+        <svg viewBox="0 0 200 200" aria-hidden="true">
+          <circle cx="100" cy="100" r="92" style="--c:var(--gold);--arc:470;--t:28s"/>
+          <circle cx="100" cy="100" r="74" style="--c:var(--edu);--arc:360;--t:22s;--d:reverse"/>
+          <circle cx="100" cy="100" r="56" style="--c:var(--sau);--arc:280;--t:17s"/>
+          <circle cx="100" cy="100" r="38" style="--c:var(--esc);--arc:190;--t:12s;--d:reverse"/>
+        </svg>
+        <div class="l-core"><div><b data-up="2.5" data-dec="1" data-pre="R$ " data-suf=" bi">R$ 0</b><span class="mono">captados para municípios</span></div></div>
       </div>
     </div>
-    <nav aria-label="Seções do painel" style="display: flex; flex-direction: column; gap: 4px">
-      <sc-for list="{{nav}}" as="n">
-        <button type="button" data-click="{{n.go}}" aria-current="{{n.current}}" style="{{n.style}}">
-          <span style="display: flex; align-items: center; gap: 12px">
-            <span style="width: 9px; height: 9px; border-radius: 50%; background: {{n.dot}}"></span>
-            {{n.label}}
-          </span>
-          <span style="font: 500 12px 'IBM Plex Mono', monospace; color: #93A3B8">{{n.badge}}</span>
-        </button>
-      </sc-for>
-    </nav>
-    <div style="margin-top: auto; padding: 16px 10px 0; border-top: 1px solid rgba(237,240,244,.14); display: flex; flex-direction: column; gap: 12px">
-      <div style="display: flex; align-items: center; gap: 10px">
-        <span style="width: 36px; height: 36px; border-radius: 50%; background: #E0A729; color: #0A1525; display: grid; place-items: center; font-weight: 800; font-size: 13px">CO</span>
-        <div style="display: flex; flex-direction: column; min-width: 0">
-          <b style="font-size: 14px">Equipe comercial</b>
-          <span style="font-size: 12px; color: #93A3B8">Acesso com verificação em 2 etapas</span>
-        </div>
+    <div class="l-head" id="lHead">
+      <h1 aria-label="Seja bem-vindo aos seus resultados.">Seja bem-vindo aos seus <em>resultados.</em></h1>
+      <p>Pedidos, inscrições, cursos e o conteúdo do site num lugar só, atualizados em tempo real para a equipe.</p>
+      <div class="l-ticker" aria-hidden="true"><div id="lTicker"></div></div>
+    </div>
+  </div>
+
+  <div class="l-side">
+    <div class="l-card" id="lCard">
+      <div id="lStep1" class="l-step">
+        <div><h2>Entrar no painel</h2><p class="sub">Use o e-mail cadastrado pela equipe SIGEMEC.</p></div>
+        <form id="lForm" class="l-step" novalidate>
+          <label class="fl" id="flEmail"><input type="email" id="lEmail" placeholder=" " autocomplete="username" required><span>E-mail</span></label>
+          <label class="fl" id="flPass"><input type="password" id="lPass" placeholder=" " autocomplete="current-password" minlength="6" required><span>Senha</span><button type="button" class="eye" id="lEye" aria-label="Mostrar senha"></button></label>
+          <div class="l-row"><label><input type="checkbox" id="lRemember"> Manter conectado</label><button type="button" class="lnk" id="lForgot">Esqueci a senha</button></div>
+          <p class="l-err" id="lErr" role="alert"></p>
+          <button class="btn-main" id="lGo" type="submit"><span>Entrar</span></button>
+        </form>
       </div>
-      <a href="../" style="color: #EDF0F4; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; min-height: 44px">
-        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-        Ver o site
-      </a>
+      <div id="lStep2" class="l-step" hidden>
+        <div><h2>Verificação em 2 etapas</h2><p class="sub" id="lSent">Enviamos um código de 6 dígitos para o seu e-mail.</p></div>
+        <form id="lCodeForm" class="l-step" novalidate>
+          <div class="code" id="lCode" role="group" aria-label="Código de verificação"></div>
+          <p class="hint">Ambiente de demonstração: use o código <b>246810</b>.</p>
+          <p class="l-err" id="lErr2" role="alert"></p>
+          <button class="btn-main" id="lGo2" type="submit"><span>Confirmar</span></button>
+          <div class="l-row"><button type="button" class="lnk" id="lBack">Voltar</button><button type="button" class="lnk" id="lResend" disabled>Reenviar código</button></div>
+        </form>
+      </div>
+      <div id="lStepF" class="l-step" hidden>
+        <div><h2>Recuperar acesso</h2><p class="sub">Informe o e-mail cadastrado. Enviaremos um link para criar uma nova senha.</p></div>
+        <form id="lForgotForm" class="l-step" novalidate>
+          <label class="fl"><input type="email" id="lEmailF" placeholder=" " autocomplete="username"><span>E-mail</span></label>
+          <p class="l-err" id="lErrF" role="alert"></p>
+          <button class="btn-main" type="submit"><span>Enviar link</span></button>
+          <button type="button" class="lnk" id="lBackF">Voltar para o login</button>
+        </form>
+      </div>
+      <div id="lStepOk" hidden></div>
+      <div class="l-foot"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 11h12v10H6zM8 11V7a4 4 0 0 1 8 0v4"/></svg>Conexão protegida · acesso registrado conforme a LGPD</div>
+    </div>
+    <p class="l-demo">Prévia · dados fictícios</p>
+  </div>
+</section>
+
+<!-- PAINEL -->
+<div class="app" id="app" hidden>
+  <div class="top-m"><div class="s-brand" data-logo><div><b>SIGEMEC</b><span>Painel do site</span></div></div><button type="button" id="navBtn" aria-label="Abrir menu" aria-expanded="false" aria-controls="side"></button></div>
+  <div class="scrim" id="scrim"></div>
+  <aside class="side" id="side" aria-label="Menu do painel">
+    <div class="s-brand" data-logo><div><b>SIGEMEC</b><span>Painel do site</span></div></div>
+    <nav class="s-nav" id="sNav" aria-label="Seções do painel"></nav>
+    <div class="s-foot">
+      <div class="s-user"><span class="av" id="uAv">CO</span><div><b id="uName">Equipe comercial</b><span>Verificação em 2 etapas ativa</span></div></div>
+      <a class="s-link" href="../" id="siteLink"></a>
+      <button type="button" class="s-link" id="resetBtn"></button>
+      <button type="button" class="s-link" id="logoutBtn"></button>
     </div>
   </aside>
+  <main class="main" id="main"></main>
+</div>
 
-  <main style="flex: 999 1 560px; min-width: 0; padding: 28px clamp(16px, 3vw, 40px) 56px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box">
-
-    <header style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
-      <div style="display: flex; flex-direction: column; gap: 4px">
-        <span style="font: 500 12px 'IBM Plex Mono', monospace; letter-spacing: .08em; text-transform: uppercase; color: #6B7A8F">Painel de controle</span>
-        <h1 style="margin: 0; font-family: Archivo, sans-serif; font-weight: 800; font-size: 34px; line-height: 1.05; font-variation-settings: 'wdth' 82">{{pageTitle}}</h1>
-        <p style="margin: 0; color: #4A586B; max-width: 62ch">{{pageSub}}</p>
-      </div>
-      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
-        <span style="padding: 7px 12px; border-radius: 999px; background: #0A1525; color: #EDF0F4; font: 500 11.5px 'IBM Plex Mono', monospace; letter-spacing: .04em; text-transform: uppercase">Prévia · dados fictícios</span>
-        <button type="button" style="min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1.5px solid rgba(10,21,37,.18); background: #fff; color: #0A1525; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer">
-          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-          Exportar planilha
-        </button>
-      </div>
-    </header>
-
-    
-    <sc-if value="{{isVisao}}">
-      <div style="display: flex; flex-direction: column; gap: 14px">
-        <div style="display: flex; flex-wrap: wrap; gap: 8px">
-          <sc-for list="{{periods}}" as="p">
-            <button type="button" data-click="{{p.pick}}" aria-pressed="{{p.on}}" style="{{p.style}}">{{p.label}}</button>
-          </sc-for>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px">
-          <sc-for list="{{kpis}}" as="k">
-            <div style="background: #fff; border: 1px solid rgba(10,21,37,.12); border-radius: 18px; padding: 18px 20px; display: flex; flex-direction: column; gap: 6px">
-              <span style="font-size: 14px; color: #4A586B">{{k.label}}</span>
-              <b style="font-family: Archivo, sans-serif; font-weight: 800; font-size: 36px; line-height: 1; font-variation-settings: 'wdth' 80; font-variant-numeric: tabular-nums">{{k.value}}</b>
-              <span style="font-size: 13px; color: {{k.deltaColor}}; font-weight: 600">{{k.delta}}</span>
-            </div>
-          </sc-for>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px">
-          <section style="background: #fff; border: 1px solid rgba(10,21,37,.12); border-radius: 20px; padding: 20px 22px">
-            <h2 style="margin: 0 0 4px; font-family: Archivo, sans-serif; font-size: 18px">Pedidos por módulo</h2>
-            <p style="margin: 0 0 16px; font-size: 13px; color: #4A586B">Um pedido pode marcar mais de um módulo.</p>
-            <div style="display: flex; flex-direction: column; gap: 10px">
-              <sc-for list="{{byModule}}" as="m">
-                <div title="{{m.tip}}" style="display: grid; grid-template-columns: 96px minmax(0, 1fr) 40px; align-items: center; gap: 10px; font-size: 14px">
-                  <span style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 50%; background: {{m.color}}"></span>{{m.label}}</span>
-                  <span style="height: 16px; display: flex; align-items: center"><span style="{{m.bar}}"></span></span>
-                  <b style="text-align: right; font-variant-numeric: tabular-nums">{{m.value}}</b>
-                </div>
-              </sc-for>
-            </div>
-          </section>
-
-          <section style="background: #fff; border: 1px solid rgba(10,21,37,.12); border-radius: 20px; padding: 20px 22px">
-            <h2 style="margin: 0 0 4px; font-family: Archivo, sans-serif; font-size: 18px">Pedidos por semana</h2>
-            <p style="margin: 0 0 16px; font-size: 13px; color: #4A586B">Pré-diagnósticos e propostas recebidos pelo site.</p>
-            <div style="display: flex; align-items: flex-end; gap: 8px; height: 150px; border-bottom: 1px solid rgba(10,21,37,.14); padding-bottom: 2px">
-              <sc-for list="{{weeks}}" as="w">
-                <div title="{{w.tip}}" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; height: 100%">
-                  <span style="font-size: 12px; font-weight: 700; color: #0A1525">{{w.label}}</span>
-                  <span style="{{w.bar}}"></span>
-                </div>
-              </sc-for>
-            </div>
-            <div style="display: flex; gap: 8px; margin-top: 6px">
-              <sc-for list="{{weeks}}" as="w">
-                <span style="flex: 1; text-align: center; font: 500 11px 'IBM Plex Mono', monospace; color: #6B7A8F">{{w.name}}</span>
-              </sc-for>
-            </div>
-          </section>
-
-          <section style="background: #fff; border: 1px solid rgba(10,21,37,.12); border-radius: 20px; padding: 20px 22px">
-            <h2 style="margin: 0 0 16px; font-family: Archivo, sans-serif; font-size: 18px">Ocupação das turmas</h2>
-            <div style="display: flex; flex-direction: column; gap: 16px">
-              <sc-for list="{{turmas}}" as="t">
-                <div style="display: flex; flex-direction: column; gap: 6px">
-                  <div style="display: flex; justify-content: space-between; gap: 10px; font-size: 14px">
-                    <span><b>{{t.cidade}}</b> · {{t.data}}</span>
-                    <span style="font-variant-numeric: tabular-nums; color: #4A586B"><b style="color: #0A1525">{{t.inscritos}}</b> de {{t.vagas}} vagas</span>
-                  </div>
-                  <div style="height: 14px; border-radius: 4px; background: rgba(10,21,37,.08); overflow: hidden"><div style="{{t.bar}}"></div></div>
-                  <span style="font-size: 12.5px; color: #4A586B">{{t.evento}}</span>
-                </div>
-              </sc-for>
-            </div>
-          </section>
-
-          <section style="background: #fff; border: 1px solid rgba(10,21,37,.12); border-radius: 20px; padding: 20px 22px">
-            <h2 style="margin: 0 0 16px; font-family: Archivo, sans-serif; font-size: 18px">Pedidos por estado</h2>
-            <div style="display: flex; flex-direction: column; gap: 10px">
-              <sc-for list="{{byUF}}" as="u">
-                <div style="display: grid; grid-template-columns: 110px minmax(0, 1fr) 32px; align-items: center; gap: 10px; font-size: 14px">
-                  <span>{{u.label}}</span>
-                  <span style="height: 16px; display: flex; align-items: center"><span style="{{u.bar}}"></span></span>
-                  <b style="text-align: right; font-variant-numeric: tabular-nums">{{u.value}}</b>
-                </div>
-              </sc-for>
-            </div>
-          </section>
-        </div>
-
-        <section style="background: #fff; border: 1px solid rgba(10,21,37,.12); border-radius: 20px; padding: 20px 22px">
-          <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px">
-            <h2 style="margin: 0; font-family: Archivo, sans-serif; font-size: 18px">Pedidos mais recentes</h2>
-            <button type="button" data-click="{{goPedidos}}" style="min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1.5px solid rgba(10,21,37,.18); background: transparent; font-weight: 600; cursor: pointer; color: #0A1525">Ver todos</button>
-          </div>
-          <sc-for list="{{recent}}" as="r">
-            <button type="button" data-click="{{r.open}}" style="width: 100%; min-height: 56px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 10px 4px; border: 0; border-top: 1px solid rgba(10,21,37,.1); background: transparent; text-align: left; cursor: pointer; color: #0A1525; font-size: 14.5px">
-              <span style="display: flex; flex-direction: column"><b>{{r.mun}}</b><span style="color: #4A586B; font-size: 13.5px">{{r.resp}} · {{r.tipo}}</span></span>
-              <span style="display: flex; align-items: center; gap: 12px"><span style="color: #4A586B; font-size: 13px">{{r.data}}</span><span style="{{r.pill}}">{{r.statusLabel}}</span></span>
-            </button>
-          </sc-for>
-        </section>
-      </div>
-    </sc-if>
-
-    
-    <sc-if value="{{isPedidos}}">
-      <div style="display: flex; flex-direction: column; gap: 14px">
-        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
-          <sc-for list="{{statusChips}}" as="c">
-            <button type="button" data-click="{{c.pick}}" aria-pressed="{{c.on}}" style="{{c.style}}">{{c.label}} <span style="opacity: .7; font-variant-numeric: tabular-nums">{{c.count}}</span></button>
-          </sc-for>
-          <label style="margin-left: auto; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 999px; background: #fff; border: 1.5px solid rgba(10,21,37,.14); min-width: 220px">
-            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="#4A586B" stroke-width="2"></circle><path d="M16 16l4 4" stroke="#4A586B" stroke-width="2" stroke-linecap="round"></path></svg>
-            <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Buscar pedido</span>
-            <input type="search" placeholder="Município, responsável ou CNPJ" style="border: 0; outline: 0; background: transparent; font-size: 14px; flex: 1; min-width: 0; color: #0A1525">
-          </label>
-        </div>
-
-        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start">
-          <section style="flex: 999 1 520px; min-width: 0; background: #fff; border: 1px solid rgba(10,21,37,.12); border-radius: 20px; padding: 8px 8px 12px; overflow-x: auto">
-            <div style="min-width: 640px">
-              <div style="display: grid; grid-template-columns: 70px minmax(150px, 1.3fr) minmax(130px, 1fr) 150px 130px; gap: 12px; padding: 12px 14px; font: 500 11.5px 'IBM Plex Mono', monospace; letter-spacing: .06em; text-transform: uppercase; color: #6B7A8F">
-                <span>Data</span><span>Município</span><span>Responsável</span><span>Módulos</span><span>Situação</span>
-              </div>
-              <sc-for list="{{rows}}" as="r">
-                <button type="button" data-click="{{r.open}}" aria-pressed="{{r.sel}}" style="{{r.rowStyle}}">
-                  <span style="color: #4A586B; font-variant-numeric: tabular-nums">{{r.data}}</span>
-                  <span style="display: flex; flex-direction: column; min-width: 0"><b>{{r.mun}}</b><span style="color: #4A586B; font-size: 13px">{{r.orgao}}</span></span>
-                  <span style="display: flex; flex-direction: column; min-width: 0"><span>{{r.resp}}</span><span style="color: #4A586B; font-size: 13px">{{r.tipo}}</span></span>
-                  <span style="display: flex; flex-wrap: wrap; gap: 4px">
-                    <sc-for list="{{r.mods}}" as="m">
-                      <span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 999px; background: #EDF0F4; font-size: 12.5px; font-weight: 600"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{m.color}}"></span>{{m.label}}</span>
-                    </sc-for>
-                  </span>
-                  <span><span style="{{r.pill}}">{{r.statusLabel}}</span></span>
-                </button>
-              </sc-for>
-              <sc-if value="{{noRows}}">
-                <p style="margin: 0; padding: 24px 14px; color: #4A586B">Nenhum pedido nesta situação.</p>
-              </sc-if>
-            </div>
-          </section>
-
-          <aside aria-label="Detalhe do pedido" style="flex: 1 1 340px; min-width: 0; background: #0A1525; color: #EDF0F4; border-radius: 20px; padding: 22px; display: flex; flex-direction: column; gap: 16px">
-            <sc-if value="{{hasSel}}">
-              <div style="display: flex; flex-direction: column; gap: 16px">
-                <div style="display: flex; flex-direction: column; gap: 4px">
-                  <span style="font: 500 11.5px 'IBM Plex Mono', monospace; letter-spacing: .06em; text-transform: uppercase; color: #93A3B8">{{sel.tipo}} · recebido em {{sel.data}}</span>
-                  <h2 style="margin: 0; font-family: Archivo, sans-serif; font-size: 26px; line-height: 1.1">{{sel.mun}}</h2>
-                  <span style="color: #93A3B8; font-size: 14px">{{sel.orgao}}</span>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 8px">
-                  <span style="font-size: 13px; font-weight: 600; color: #93A3B8">Situação</span>
-                  <div style="display: flex; flex-wrap: wrap; gap: 6px">
-                    <sc-for list="{{sel.statusOpts}}" as="o">
-                      <button type="button" data-click="{{o.pick}}" aria-pressed="{{o.on}}" style="{{o.style}}">{{o.label}}</button>
-                    </sc-for>
-                  </div>
-                </div>
-                <dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-                  <sc-for list="{{sel.facts}}" as="f">
-                    <div style="padding: 10px 12px; border-radius: 12px; background: rgba(237,240,244,.06); min-width: 0">
-                      <dt style="font-size: 12px; color: #93A3B8">{{f.k}}</dt>
-                      <dd style="margin: 2px 0 0; font-weight: 600; font-size: 14px; overflow-wrap: anywhere">{{f.v}}</dd>
-                    </div>
-                  </sc-for>
-                </dl>
-                <div style="display: flex; flex-direction: column; gap: 8px">
-                  <span style="font-size: 13px; font-weight: 600; color: #93A3B8">Respostas por módulo</span>
-                  <sc-for list="{{sel.answers}}" as="a">
-                    <div style="display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid rgba(237,240,244,.12); font-size: 14px">
-                      <span style="color: #C4CFDC">{{a.k}}</span><b style="text-align: right">{{a.v}}</b>
-                    </div>
-                  </sc-for>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 8px">
-                  <span style="font-size: 13px; font-weight: 600; color: #93A3B8">Situação descrita pelo município</span>
-                  <p style="margin: 0; padding: 14px; border-radius: 12px; background: rgba(237,240,244,.06); font-size: 14.5px; line-height: 1.55">{{sel.desc}}</p>
-                </div>
-                <div style="display: flex; flex-wrap: wrap; gap: 8px">
-                  <a href="#" style="min-height: 44px; padding: 0 18px; border-radius: 999px; background: #E0A729; color: #0A1525; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; text-decoration: none">Responder no WhatsApp</a>
-                  <a href="#" style="min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1.5px solid rgba(237,240,244,.24); color: #EDF0F4; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; text-decoration: none">Enviar proposta por e-mail</a>
-                </div>
-                <p style="margin: 0; font-size: 12.5px; color: #93A3B8">CPF e telefone aparecem mascarados. O dado completo só abre para quem tem permissão, e cada acesso fica registrado (LGPD).</p>
-              </div>
-            </sc-if>
-            <sc-if value="{{noSel}}">
-              <p style="margin: 0; color: #93A3B8">Selecione um pedido na lista para ver as respostas do formulário.</p>
-            </sc-if>
-          </aside>
-        </div>
-      </div>
-    </sc-if>
-
-    
-    <sc-if value="{{isInscricoes}}">
-      <div style="display: flex; flex-direction: column; gap: 14px">
-        <div style="display: flex; flex-wrap: wrap; gap: 8px">
-          <sc-for list="{{turmaChips}}" as="t">
-            <button type="button" data-click="{{t.pick}}" aria-pressed="{{t.on}}" style="{{t.style}}">{{t.label}}</button>
-          </sc-for>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
-          <sc-for list="{{turmaKpis}}" as="k">
-            <div style="background: #fff; border: 1px solid rgba(10,21,37,.12); border-radius: 18px; padding: 18px 20px; display: flex; flex-direction: column; gap: 6px">
-              <span style="font-size: 14px; color: #4A586B">{{k.label}}</span>
-              <b style="font-family: Archivo, sans-serif; font-weight: 800; font-size: 32px; line-height: 1; font-variation-settings: 'wdth' 80; font-variant-numeric: tabular-nums">{{k.value}}</b>
-            </div>
-          </sc-for>
-        </div>
-        <section style="background: #fff; border: 1px solid rgba(10,21,37,.12); border-radius: 20px; padding: 8px 8px 12px; overflow-x: auto">
-          <div style="min-width: 760px">
-            <div style="display: grid; grid-template-columns: minmax(170px, 1.3fr) 140px minmax(150px, 1fr) minmax(120px, .9fr) 110px 120px; gap: 12px; padding: 12px 14px; font: 500 11.5px 'IBM Plex Mono', monospace; letter-spacing: .06em; text-transform: uppercase; color: #6B7A8F">
-              <span>Participante</span><span>CPF</span><span>Função</span><span>Município</span><span>Pagador</span><span>Situação</span>
-            </div>
-            <sc-for list="{{people}}" as="p">
-              <div style="display: grid; grid-template-columns: minmax(170px, 1.3fr) 140px minmax(150px, 1fr) minmax(120px, .9fr) 110px 120px; gap: 12px; align-items: center; padding: 12px 14px; border-top: 1px solid rgba(10,21,37,.1); font-size: 14px">
-                <b>{{p.nome}}</b>
-                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #4A586B">{{p.cpf}}</span>
-                <span>{{p.funcao}}</span>
-                <span>{{p.mun}}</span>
-                <span style="color: #4A586B">{{p.pagador}}</span>
-                <span><button type="button" data-click="{{p.next}}" title="Clique para avançar a situação" style="{{p.pill}}">{{p.status}}</button></span>
-              </div>
-            </sc-for>
-          </div>
-        </section>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px">
-          <button type="button" style="min-height: 44px; padding: 0 18px; border-radius: 999px; border: 0; background: #EA6036; color: #0A1525; font-weight: 700; font-size: 14px; cursor: pointer">Gerar lista de presença</button>
-          <button type="button" style="min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1.5px solid rgba(10,21,37,.18); background: #fff; color: #0A1525; font-weight: 600; font-size: 14px; cursor: pointer">Enviar boletos da turma</button>
-        </div>
-      </div>
-    </sc-if>
-
-    
-    <sc-if value="{{isConteudo}}">
-      <div style="display: flex; flex-direction: column; gap: 14px">
-        <div role="tablist" aria-label="Conteúdo do site" style="display: flex; flex-wrap: wrap; gap: 6px; padding: 6px; border-radius: 999px; background: #fff; border: 1px solid rgba(10,21,37,.12); align-self: flex-start; max-width: 100%">
-          <sc-for list="{{ctabs}}" as="c">
-            <button type="button" role="tab" data-click="{{c.pick}}" aria-selected="{{c.on}}" style="{{c.style}}">{{c.label}}</button>
-          </sc-for>
-        </div>
-
-        <sc-if value="{{cNumeros}}">
-          <section style="background: #fff; border: 1px solid rgba(10,21,37,.12); border-radius: 20px; padding: 22px">
-            <h2 style="margin: 0 0 4px; font-family: Archivo, sans-serif; font-size: 20px">Números do grupo</h2>
-            <p style="margin: 0 0 18px; color: #4A586B; font-size: 14px">Aparecem na página inicial e em Sobre nós. Os contadores animam até o valor salvo.</p>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px">
-              <sc-for list="{{numeros}}" as="n">
-                <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #4A586B">
-                  {{n.label}}
-                  <input data-value="{{n.value}}" data-input="{{markDirty}}" style="min-height: 46px; padding: 0 14px; border-radius: 12px; border: 1.5px solid rgba(10,21,37,.16); background: #F7F9FB; font-size: 16px; font-weight: 600; color: #0A1525">
-                </label>
-              </sc-for>
-            </div>
-          </section>
-        </sc-if>
-
-        <sc-if value="{{cProjetos}}">
-          <section style="background: #fff; border: 1px solid rgba(10,21,37,.12); border-radius: 20px; padding: 22px; overflow-x: auto">
-            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 14px">
-              <div>
-                <h2 style="margin: 0; font-family: Archivo, sans-serif; font-size: 20px">Projetos contemplados</h2>
-                <p style="margin: 4px 0 0; color: #4A586B; font-size: 14px">Cada projeto alimenta os cartões, os gráficos e a janela de detalhe da home.</p>
-              </div>
-              <button type="button" data-click="{{markDirty}}" style="min-height: 44px; padding: 0 18px; border-radius: 999px; border: 0; background: #0A1525; color: #EDF0F4; font-weight: 700; font-size: 14px; cursor: pointer">Adicionar projeto</button>
-            </div>
-            <div style="min-width: 620px">
-              <div style="display: grid; grid-template-columns: minmax(180px, 1.4fr) 150px 110px 150px; gap: 12px; padding: 10px 4px; font: 500 11.5px 'IBM Plex Mono', monospace; letter-spacing: .06em; text-transform: uppercase; color: #6B7A8F">
-                <span>Município</span><span>Valor pago</span><span>Pago em</span><span>Ações</span>
-              </div>
-              <sc-for list="{{projetos}}" as="p">
-                <div style="display: grid; grid-template-columns: minmax(180px, 1.4fr) 150px 110px 150px; gap: 12px; align-items: center; padding: 10px 4px; border-top: 1px solid rgba(10,21,37,.1); font-size: 14.5px">
-                  <b>{{p.mun}}</b>
-                  <span style="font-variant-numeric: tabular-nums">{{p.valor}}</span>
-                  <span style="color: #4A586B">{{p.pago}}</span>
-                  <span style="display: flex; gap: 6px">
-                    <button type="button" data-click="{{markDirty}}" style="min-height: 40px; padding: 0 12px; border-radius: 999px; border: 1.5px solid rgba(10,21,37,.18); background: transparent; font-weight: 600; cursor: pointer; color: #0A1525">Editar</button>
-                    <button type="button" data-click="{{markDirty}}" style="min-height: 40px; padding: 0 12px; border-radius: 999px; border: 0; background: transparent; font-weight: 600; cursor: pointer; color: #B3361A">Remover</button>
-                  </span>
-                </div>
-              </sc-for>
-            </div>
-          </section>
-        </sc-if>
-
-        <sc-if value="{{cTurmas}}">
-          <section style="background: #fff; border: 1px solid rgba(10,21,37,.12); border-radius: 20px; padding: 22px">
-            <h2 style="margin: 0 0 4px; font-family: Archivo, sans-serif; font-size: 20px">Turmas dos encontros</h2>
-            <p style="margin: 0 0 16px; color: #4A586B; font-size: 14px">A situação da turma muda o selo no site e a origem da inscrição (interesse ou inscrição confirmada).</p>
-            <div style="display: flex; flex-direction: column; gap: 10px">
-              <sc-for list="{{turmas}}" as="t">
-                <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; padding: 14px; border-radius: 14px; background: #F7F9FB; border: 1px solid rgba(10,21,37,.08)">
-                  <div style="flex: 2 1 240px; display: flex; flex-direction: column"><b>{{t.cidade}} · {{t.data}}</b><span style="color: #4A586B; font-size: 13.5px">{{t.evento}}</span></div>
-                  <label style="flex: 1 1 160px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #4A586B">Situação
-                    <select data-value="{{t.status}}" data-change="{{markDirty}}" style="min-height: 44px; padding: 0 12px; border-radius: 12px; border: 1.5px solid rgba(10,21,37,.16); background: #fff; font-size: 15px; color: #0A1525">
-                      <option value="Em formação">Em formação</option><option value="Confirmada">Confirmada</option><option value="Encerrada">Encerrada</option>
-                    </select>
-                  </label>
-                  <label style="flex: 0 1 110px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #4A586B">Vagas
-                    <input type="number" data-value="{{t.vagas}}" data-input="{{markDirty}}" style="min-height: 44px; padding: 0 12px; border-radius: 12px; border: 1.5px solid rgba(10,21,37,.16); background: #fff; font-size: 15px; color: #0A1525">
-                  </label>
-                </div>
-              </sc-for>
-            </div>
-          </section>
-        </sc-if>
-
-        <sc-if value="{{cAtas}}">
-          <section style="background: #fff; border: 1px solid rgba(10,21,37,.12); border-radius: 20px; padding: 22px">
-            <h2 style="margin: 0 0 4px; font-family: Archivo, sans-serif; font-size: 20px">Atas de registro de preço</h2>
-            <p style="margin: 0 0 16px; color: #4A586B; font-size: 14px">Nenhuma ata cadastrada. Enquanto a lista estiver vazia, o site informa que a ata segue com a proposta.</p>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
-              <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #4A586B">Nº da ata<input placeholder="Ex.: 012/2026" style="min-height: 46px; padding: 0 14px; border-radius: 12px; border: 1.5px solid rgba(10,21,37,.16); background: #F7F9FB; font-size: 15px"></label>
-              <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #4A586B">Órgão gerenciador<input placeholder="[NOME DO ÓRGÃO]" style="min-height: 46px; padding: 0 14px; border-radius: 12px; border: 1.5px solid rgba(10,21,37,.16); background: #F7F9FB; font-size: 15px"></label>
-              <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #4A586B">Objeto<input placeholder="Ex.: Consultoria em gestão educacional" style="min-height: 46px; padding: 0 14px; border-radius: 12px; border: 1.5px solid rgba(10,21,37,.16); background: #F7F9FB; font-size: 15px"></label>
-              <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #4A586B">Validade<input type="date" style="min-height: 46px; padding: 0 14px; border-radius: 12px; border: 1.5px solid rgba(10,21,37,.16); background: #F7F9FB; font-size: 15px"></label>
-              <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; color: #4A586B">PDF da ata<input type="file" accept="application/pdf" style="min-height: 46px; padding: 10px 14px; border-radius: 12px; border: 1.5px dashed rgba(10,21,37,.24); background: #F7F9FB; font-size: 14px; box-sizing: border-box"></label>
-            </div>
-            <button type="button" data-click="{{markDirty}}" style="margin-top: 16px; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 0; background: #0A1525; color: #EDF0F4; font-weight: 700; font-size: 14px; cursor: pointer">Adicionar ata</button>
-          </section>
-        </sc-if>
-
-        <sc-if value="{{cDepo}}">
-          <section style="background: #fff; border: 1px solid rgba(10,21,37,.12); border-radius: 20px; padding: 22px">
-            <h2 style="margin: 0 0 4px; font-family: Archivo, sans-serif; font-size: 20px">Depoimentos</h2>
-            <p style="margin: 0 0 16px; color: #4A586B; font-size: 14px">Ligue ou desligue cada depoimento e troque a foto do município.</p>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px">
-              <sc-for list="{{depos}}" as="d">
-                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 14px; background: #F7F9FB; border: 1px solid rgba(10,21,37,.08)">
-                  <span style="width: 52px; height: 52px; flex-shrink: 0; border-radius: 12px; background: #0F2744; color: #E0A729; display: grid; place-items: center; font-family: Archivo, sans-serif; font-weight: 800; font-size: 15px">{{d.ini}}</span>
-                  <div style="flex: 1; min-width: 0; display: flex; flex-direction: column"><b style="font-size: 14.5px">{{d.nome}}</b><span style="color: #4A586B; font-size: 13px">{{d.mun}}</span></div>
-                  <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; min-height: 44px; cursor: pointer"><input type="checkbox" data-checked="{{d.on}}" data-change="{{markDirty}}" style="width: 20px; height: 20px; accent-color: #E0A729">No site</label>
-                </div>
-              </sc-for>
-            </div>
-          </section>
-        </sc-if>
-
-        <div style="position: sticky; bottom: 16px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 18px; background: #0A1525; color: #EDF0F4; box-shadow: 0 20px 40px -24px rgba(10,21,37,.6)">
-          <span style="font-size: 14.5px">{{publishMsg}}</span>
-          <button type="button" data-click="{{publish}}" style="min-height: 44px; padding: 0 20px; border-radius: 999px; border: 0; background: #E0A729; color: #0A1525; font-weight: 700; font-size: 14px; cursor: pointer">Publicar alterações no site</button>
-        </div>
-      </div>
-    </sc-if>
-
-  </main>
-</div></template>
-<div id="app"></div>
+<dialog class="modal" id="modal" aria-labelledby="mTitle"><div class="m-box" id="mBox"></div></dialog>
+<div class="toasts" id="toasts" aria-live="polite"></div>
 </body>
 </html>
