@@ -1,0 +1,16 @@
+/* Estilos usados só dentro da edição visual do painel (não vão para o site). */
+[contenteditable]{outline:1px dashed transparent;outline-offset:2px;border-radius:3px;cursor:text;transition:outline-color .15s}
+[contenteditable]:hover{outline-color:rgba(217,160,41,.8)}
+[contenteditable]:focus{outline:2px solid #d9a029;background:rgba(217,160,41,.08)}
+.ed-on{box-shadow:0 0 0 3px #d9a029!important}
+img{cursor:pointer}
+img:hover{outline:3px solid rgba(217,160,41,.8);outline-offset:-3px}
+/* blocos que no site abrem por clique ou carrossel aparecem abertos para editar */
+[hidden]:not(#legal):not(#cookiebar):not(#post):not(#accMenu):not(.ok):not(.err-msg){display:revert!important}
+.wiz-pane[hidden],.modq[hidden]{display:grid!important}
+dialog.dlg{display:block!important;position:static!important;width:auto!important;max-height:none!important;margin:24px auto!important;box-shadow:0 0 0 2px #e4e7ec!important}
+.dlg-box{max-height:none!important}
+.q-stage{display:flex!important;flex-direction:column;gap:32px}
+.q{opacity:1!important;visibility:visible!important}
+.sheet,.wa-float,.cookiebar,.legal,.read-bar{display:none!important}
+.nav{position:relative!important}

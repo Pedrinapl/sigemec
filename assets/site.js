@@ -50,8 +50,8 @@ const TURMAS = [
   { evento: "jep", cidade: "Salinópolis", uf: "PA", datas: "04, 05 e 06/11/2026", status: "em formação" }
 ];
 const EVENTOS = {
-  gem: { nome: "Gestão Educacional Municipal 2026", preco: 500 },
-  jep: { nome: "VIII Jornada de Excelência Pedagógica 2026", preco: 1000 }
+  gem: { nome: "Gestão Educacional Municipal 2026" },
+  jep: { nome: "VIII Jornada de Excelência Pedagógica 2026" }
 };
 const MAX_PARTICIPANTES = 4;
 
@@ -60,69 +60,26 @@ const MAX_PARTICIPANTES = 4;
    Exemplo: { numero: "012/2026", orgao: "Consórcio X", objeto: "Consultoria em gestão educacional", validade: "31/12/2026", pdf: "assets/atas/ata-012-2026.pdf" } */
 const ATAS = [];
 
-/* Painéis de exemplo da página de módulos (dados fictícios, apenas para ilustrar). */
-const DEMO = {
-  gestaoKpis: [
-    { v: "14", l: "convênios acompanhados" },
-    { v: "R$ 9,8 mi", l: "em execução" },
-    { v: "11", l: "em dia", st: "ok" },
-    { v: "3", l: "pedem atenção", st: "warn" }
-  ],
-  gestaoStatus: [
-    { label: "Em dia", value: 11, st: "ok" },
-    { label: "Atenção", value: 2, st: "warn" },
-    { label: "Atrasado", value: 1, st: "late" }
-  ],
-  gestaoExec: [
-    { label: "Ônibus escolar", value: 100, st: "ok" },
-    { label: "Mobiliário escolar", value: 93, st: "ok" },
-    { label: "Creche Proinfância", value: 86, st: "ok" },
-    { label: "Quadra coberta", value: 64, st: "ok" },
-    { label: "Reforma de 3 escolas", value: 41, st: "warn" },
-    { label: "UBS Porte I", value: 22, st: "late" }
-  ],
-  eduMinimos: [
-    { label: "Manutenção e desenvolvimento do ensino", value: 26.8, min: 25, max: 35 },
-    { label: "Fundeb na remuneração dos profissionais", value: 74.2, min: 70, max: 100 }
-  ],
-  eduProgramas: [
-    { label: "PDDE", value: 91 },
-    { label: "PNAE", value: 82 },
-    { label: "PNATE", value: 64 },
-    { label: "Escola em Tempo Integral", value: 47 }
-  ],
-  saudeMinimo: [
-    { label: "Ações e serviços públicos de saúde", value: 17.4, min: 15, max: 25 }
-  ],
-  escolaFreq: [
-    { label: "E.M. Centro", value: 92 },
-    { label: "CMEI Pequeno Príncipe", value: 90 },
-    { label: "E.M. Vila Nova", value: 88 },
-    { label: "E.M. Jardim", value: 84 },
-    { label: "E.M. Boa Esperança", value: 79 },
-    { label: "E.M. Rural São José", value: 71 }
-  ]
-};
-
 const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 
 /* ==================================================== */
 (function () {
   'use strict';
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const desktop = () => matchMedia('(min-width: 900px)').matches;
-  const hasGsap = typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined';
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const fmt = (v, dec) => dec ? v.toFixed(dec).replace('.', ',') : Math.round(v).toLocaleString('pt-BR');
   const brl = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   const brlShort = v => v >= 1e6 ? 'R$ ' + (v / 1e6).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + ' mi' : 'R$ ' + Math.round(v / 1e3).toLocaleString('pt-BR') + ' mil';
-  const pct = v => v.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '%';
   const slug = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   const onScroll = fn => { addEventListener('scroll', fn, { passive: true }); fn(); };
   const store = {
     get(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+  const session = {
+    take(k) { try { const v = sessionStorage.getItem(k); sessionStorage.removeItem(k); return v; } catch (e) { return null; } },
+    set(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
   };
 
   /* Monta elementos sem innerHTML: textos entram sempre como texto. */
@@ -149,25 +106,74 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
     return s;
   };
 
-  /* ---------- rolagem suave ---------- */
-  let lenis = null, velocity = 0;
-  if (hasGsap) gsap.registerPlugin(ScrollTrigger);
-  if (!reduce && typeof Lenis !== 'undefined') {
-    lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
-    lenis.on('scroll', e => { velocity = e.velocity || 0; if (hasGsap) ScrollTrigger.update(); });
-    if (hasGsap) { gsap.ticker.add(t => lenis.raf(t * 1000)); gsap.ticker.lagSmoothing(0); }
-    else { const raf = t => { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
-  }
-  const goTo = (el, offset = -90) => {
-    if (lenis) lenis.scrollTo(el, { offset, duration: 1.2 });
-    else window.scrollTo({ top: el.getBoundingClientRect().top + scrollY + offset, behavior: reduce ? 'auto' : 'smooth' });
+  /* ---------- rolagem ---------- */
+  const nav = $('#nav'), subnav = $('.subnav');
+  const headH = () => (nav ? nav.offsetHeight : 0) + (subnav ? subnav.offsetHeight : 0) + 12;
+  const goTo = (el, smooth = true) => {
+    const top = el.id === 'topo' ? 0 : el.getBoundingClientRect().top + scrollY - headH();
+    window.scrollTo({ top: Math.max(0, top), behavior: smooth && !reduce ? 'smooth' : 'auto' });
   };
-  const lockScroll = on => { document.body.style.overflow = on ? 'hidden' : ''; if (lenis) on ? lenis.stop() : lenis.start(); };
+  const lockScroll = on => { document.documentElement.classList.toggle('locked', on); };
+
+  /* ---------- histórico: voltar e avançar funcionam em todo o site ----------
+     Âncoras da mesma página criam uma entrada no histórico; janelas, menu e políticas também,
+     para que o botão "voltar" do navegador ou do celular feche o que estiver aberto em vez de sair do site. */
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  const overlays = new Map();
+  let ignorePop = 0, pendingNav = null;
+  const saveY = () => { try { history.replaceState(Object.assign({}, history.state, { y: scrollY }), ''); } catch (e) {} };
+  function overlayOpened(name, close, url) {
+    if (overlays.has(name)) return;
+    overlays.set(name, close);
+    saveY();
+    history.pushState({ ov: name, y: scrollY }, '', url || location.href);
+  }
+  function overlayClosed(name) {
+    if (!overlays.has(name)) return;
+    overlays.delete(name);
+    if (history.state && history.state.ov === name) { ignorePop++; history.back(); }
+  }
+  addEventListener('popstate', e => {
+    if (ignorePop) {
+      ignorePop--;
+      if (pendingNav) { const u = pendingNav; pendingNav = null; location.href = u; }
+      return;
+    }
+    let closed = false;
+    overlays.forEach((close, name) => { if (!(e.state && e.state.ov === name)) { overlays.delete(name); close(); closed = true; } });
+    if (closed) return;
+    if (e.state && e.state.ov) return;
+    const id = location.hash.slice(1);
+    if (/^projeto-[a-z0-9-]+$/.test(id)) { openProjeto(id.slice(8), true); return; }
+    if (e.state && e.state.y != null) { window.scrollTo(0, e.state.y); return; }
+    const el = id && /^[\w-]+$/.test(id) && document.getElementById(id);
+    if (el && el.tagName !== 'DIALOG') goTo(el, false); else if (!id) window.scrollTo(0, 0);
+  });
+  addEventListener('pagehide', saveY);
+  /* página restaurada do cache do navegador: nada fica travado aberto */
+  addEventListener('pageshow', e => {
+    if (!e.persisted) return;
+    document.body.classList.remove('menu-open');
+    $$('dialog[open]').forEach(d => d.close());
+    lockScroll(false);
+    overlays.clear();
+  });
+  /* links "Voltar": volta para a página anterior do site; sem histórico, vai para o início */
+  document.addEventListener('click', e => {
+    const a = e.target.closest('[data-back]'); if (!a) return;
+    let same = false;
+    try { same = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (err) {}
+    if (same && history.length > 1) { e.preventDefault(); history.back(); }
+  });
 
   /* ---------- janelas (dialog) ---------- */
-  const openDlg = d => { if (!d || d.open) return; d.showModal(); lockScroll(true); };
+  const openDlg = (d, url) => {
+    if (!d || d.open) return;
+    d.showModal(); lockScroll(true);
+    overlayOpened('dlg-' + d.id, () => { if (d.open) d.close(); }, url);
+  };
   $$('dialog.dlg').forEach(d => {
-    d.addEventListener('close', () => { lockScroll(false); d.dispatchEvent(new CustomEvent('dlg:closed')); });
+    d.addEventListener('close', () => { lockScroll(false); overlayClosed('dlg-' + d.id); d.dispatchEvent(new CustomEvent('dlg:closed')); });
     d.addEventListener('click', e => { if (e.target === d || e.target.closest('[data-close]')) d.close(); });
   });
   document.addEventListener('click', e => {
@@ -176,55 +182,68 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
   });
 
   /* ---------- âncoras da mesma página ---------- */
-  document.addEventListener('click', e => {
-    const a = e.target.closest('a[href^="#"], a[href^="index.html#"]');
-    if (!a) return;
-    const raw = a.getAttribute('href');
-    const samePage = raw.startsWith('#') || (raw.startsWith('index.html#') && $('#contato'));
-    if (!samePage || a.dataset.route !== undefined || a.dataset.legal !== undefined) return;
-    const id = raw.slice(raw.indexOf('#') + 1);
+  const samePageTarget = raw => {
+    const i = raw.indexOf('#'); if (i < 0) return null;
+    const file = raw.slice(0, i), id = raw.slice(i + 1);
+    const here = location.pathname.split('/').pop() || 'index.html';
+    if (file && file !== here) return null;
     const el = id && document.getElementById(id);
-    if (!el || el.tagName === 'DIALOG') return;
+    return el && el.tagName !== 'DIALOG' ? el : null;
+  };
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href*="#"]');
+    if (!a || a.target === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    if (a.dataset.route !== undefined || a.dataset.legal !== undefined) return;
+    const raw = a.getAttribute('href');
+    if (a.dataset.tipo) { setTipo(a.dataset.tipo); session.set('sig-tipo', a.dataset.tipo); }
+    const el = samePageTarget(raw);
+    if (!el) return;
     e.preventDefault();
-    closeMenu();
-    const dlg = a.closest('dialog'); if (dlg) { dlg.close(); lockScroll(false); }
-    if (a.dataset.tipo) setTipo(a.dataset.tipo);
-    goTo(el, id === 'topo' ? 0 : -90);
+    const inOverlay = a.closest('dialog, #sheet');
+    if (inOverlay) { if (a.closest('#sheet')) closeMenu(); }
+    else { saveY(); history.pushState({ a: 1 }, '', '#' + el.id); }
+    goTo(el);
   });
   addEventListener('load', () => {
+    const t = session.take('sig-tipo'); if (t) setTipo(t);
+    if (history.state && history.state.y != null) { window.scrollTo(0, history.state.y); return; }
     const id = location.hash.slice(1);
-    if (/^projeto-[a-z0-9-]+$/.test(id)) return openProjeto(id.slice(8));
+    if (/^projeto-[a-z0-9-]+$/.test(id)) { history.replaceState(null, '', location.pathname); return openProjeto(id.slice(8)); }
     const el = id && /^[\w-]+$/.test(id) && document.getElementById(id);
-    if (el && el.tagName !== 'DIALOG') setTimeout(() => goTo(el), 150);
+    if (el && el.tagName !== 'DIALOG') setTimeout(() => goTo(el, false), 60);
   });
 
-  /* ---------- menu mobile e nav que some ao descer ---------- */
+  /* ---------- menu do celular ---------- */
   const menuBtn = $('#menuBtn');
   function setMenu(open) {
     if (!menuBtn || document.body.classList.contains('menu-open') === open) return;
+    if (open && nav) document.documentElement.style.setProperty('--sheet-top', Math.max(0, nav.getBoundingClientRect().bottom) + 'px');
     document.body.classList.toggle('menu-open', open);
     menuBtn.setAttribute('aria-expanded', String(open));
     menuBtn.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
     lockScroll(open);
+    if (open) overlayOpened('menu', () => setMenu(false)); else overlayClosed('menu');
   }
   function closeMenu() { setMenu(false); }
   if (menuBtn) {
     menuBtn.addEventListener('click', () => setMenu(!document.body.classList.contains('menu-open')));
-    $$('#sheet a').forEach(a => a.addEventListener('click', closeMenu));
+    /* link para outra página: primeiro desfaz a entrada do menu no histórico, depois navega */
+    $$('#sheet a').forEach(a => a.addEventListener('click', e => {
+      if (a.target === '_blank' || samePageTarget(a.getAttribute('href'))) return;
+      if (history.state && history.state.ov === 'menu') {
+        e.preventDefault();
+        if (a.dataset.tipo) session.set('sig-tipo', a.dataset.tipo);
+        pendingNav = a.href;
+        overlays.delete('menu'); ignorePop++; history.back();
+        setTimeout(() => { if (pendingNav) { const u = pendingNav; pendingNav = null; location.href = u; } }, 400);
+      }
+    }));
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
     matchMedia('(min-width:1100px)').addEventListener('change', e => { if (e.matches) closeMenu(); });
   }
-  const nav = $('#nav');
-  let lastY = 0;
-  onScroll(() => {
-    const y = scrollY;
-    const hide = y > lastY && y > 300 && !document.body.classList.contains('menu-open');
-    if (nav) nav.classList.toggle('hide', hide);
-    if (hide) setAcc(false);
-    lastY = y;
-  });
+  if (nav) onScroll(() => nav.classList.toggle('scrolled', scrollY > 8));
 
-  /* ---------- área do cliente ---------- */
+  /* ---------- acessar o sistema ---------- */
   const accBtn = $('#accBtn'), accMenu = $('#accMenu');
   function setAcc(o) { if (!accBtn) return; accMenu.hidden = !o; accBtn.setAttribute('aria-expanded', String(o)); }
   if (accBtn) {
@@ -234,88 +253,18 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
     addEventListener('keydown', e => { if (e.key === 'Escape' && !accMenu.hidden) { setAcc(false); accBtn.focus(); } });
   }
 
-  /* ---------- faixas de logos ---------- */
-  const rows = $$('.mq-row').map(row => {
-    const track = row.querySelector('.mq-track');
-    row.appendChild(track.cloneNode(true)); row.appendChild(track.cloneNode(true));
-    return { row, track, x: 0, base: parseFloat(row.dataset.speed) };
-  });
-  if (rows.length) {
-    let skew = 0;
-    const tick = () => {
-      const v = Math.max(-40, Math.min(40, velocity));
-      skew += ((-v * 0.25) - skew) * 0.12;
-      rows.forEach(r => {
-        const w = r.track.offsetWidth;
-        const dir = Math.sign(r.base) * (v < -2 ? -1 : 1);
-        if (!reduce) r.x -= (Math.abs(r.base) * 0.9 + Math.abs(v) * 0.35) * dir;
-        if (r.x <= -w) r.x += w; if (r.x > 0) r.x -= w;
-        r.row.style.transform = `translateX(${r.x}px) skewX(${skew}deg)`;
-      });
-      velocity *= 0.9;
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }
-
-  /* ---------- frase que acende palavra por palavra ---------- */
-  const say = $('#say');
-  if (say) {
-    const hl = (say.dataset.hl || '').split('|');
-    const words = say.textContent.trim().split(/\s+/);
-    say.textContent = '';
-    words.forEach((w, i) => { say.append(h('span', { class: 'w' + (hl.includes(w) ? ' hl' : ''), text: w })); if (i < words.length - 1) say.append(' '); });
-    const spans = $$('.w', say);
-    onScroll(() => {
-      const r = say.getBoundingClientRect();
-      const p = Math.min(1, Math.max(0, (innerHeight * 0.85 - r.top) / (r.height + innerHeight * 0.35)));
-      const n = Math.round(p * spans.length);
-      spans.forEach((w, i) => w.classList.toggle('on', i < n));
-    });
-  }
-
-  /* ---------- trilho horizontal do método ---------- */
-  const method = $('#metodo'), track = $('#track'), mBar = $('#methodBar');
-  const sizeMethod = () => {
-    if (!method) return;
-    if (!desktop()) { method.style.height = ''; track.style.transform = ''; return; }
-    const dist = Math.max(0, track.scrollWidth - innerWidth);
-    method.style.height = (innerHeight + dist) + 'px';
-    method.dataset.dist = dist;
-  };
-  const methodScroll = () => {
-    if (!method || !desktop()) return;
-    const dist = +method.dataset.dist || 0;
-    const p = Math.min(1, Math.max(0, -method.getBoundingClientRect().top / Math.max(1, dist)));
-    track.style.transform = `translate3d(${-p * dist}px,0,0)`;
-    if (mBar) mBar.style.transform = `scaleX(${p})`;
-  };
-  if (method) addEventListener('scroll', methodScroll, { passive: true });
-
-  /* ---------- fotos andando de lado ---------- */
-  const photos = $('#photos');
-  const photoScroll = () => {
-    if (!photos || reduce) return;
-    const r = photos.getBoundingClientRect();
-    const dist = Math.max(0, photos.scrollWidth - innerWidth + 32);
-    const p = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight + r.height)));
-    photos.style.transform = `translate3d(${-p * dist}px,0,0)`;
-  };
-  if (photos) addEventListener('scroll', photoScroll, { passive: true });
-
-  /* ---------- sub-navegação da página de módulos ---------- */
+  /* ---------- sub-navegação da página de áreas ---------- */
   const subLinks = $$('.subnav a');
   if (subLinks.length) {
-    const mods = subLinks.map(a => document.getElementById(a.getAttribute('href').slice(1)));
+    const secs = subLinks.map(a => document.getElementById(a.getAttribute('href').slice(1)));
     onScroll(() => {
       let idx = 0;
-      mods.forEach((m, i) => { if (m.getBoundingClientRect().top < innerHeight * 0.45) idx = i; });
+      secs.forEach((m, i) => { if (m && m.getBoundingClientRect().top < innerHeight * 0.4) idx = i; });
       subLinks.forEach((a, i) => a.classList.toggle('on', i === idx));
-      document.documentElement.style.setProperty('--arm', getComputedStyle(mods[idx]).getPropertyValue('--c'));
     });
   }
 
-  /* ---------- barra de leitura ---------- */
+  /* ---------- barra de leitura do blog ---------- */
   const readBar = $('#readBar');
   if (readBar) onScroll(() => {
     const art = $('#post');
@@ -323,19 +272,6 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
     const r = art.getBoundingClientRect();
     readBar.style.transform = `scaleX(${Math.min(1, Math.max(0, -r.top / (r.height - innerHeight)))})`;
   });
-
-  /* ---------- GSAP: anéis, títulos, letreiro do rodapé ---------- */
-  if (hasGsap && !reduce) {
-    $$('.rings .rg').forEach(g => {
-      const k = parseFloat(g.dataset.rot);
-      gsap.set(g, { svgOrigin: '300 300' });
-      gsap.to(g, { rotation: '+=' + 360 * Math.sign(k), duration: 60 / Math.abs(k), repeat: -1, ease: 'none' });
-    });
-    if ($('.rings')) gsap.to('.rings svg', { rotation: 90, ease: 'none', scrollTrigger: { trigger: '.rings', start: 'top top', end: 'bottom top', scrub: 0.6 } });
-    gsap.from('h1 .ln > span', { yPercent: 105, duration: 1.1, ease: 'expo.out', stagger: 0.08, delay: 0.1 });
-    if ($('.giant')) gsap.from('.giant span', { yPercent: 45, ease: 'none', stagger: 0.04, scrollTrigger: { trigger: 'footer', start: 'top bottom', end: 'bottom bottom', scrub: 0.8 } });
-    $$('.photos img').forEach(img => gsap.fromTo(img, { xPercent: -6 }, { xPercent: 6, ease: 'none', scrollTrigger: { trigger: '#photos', start: 'top bottom', end: 'bottom top', scrub: true } }));
-  }
 
   /* ---------- indicadores e contadores ---------- */
   $$('[data-ind]').forEach(el => {
@@ -397,9 +333,6 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
   };
   addEventListener('scroll', hideTip, { passive: true });
 
-  const ST = { ok: { label: 'Em dia', icon: 'i-ok' }, warn: { label: 'Atenção', icon: 'i-warn' }, late: { label: 'Atrasado', icon: 'i-late' } };
-  const stBadge = st => h('span', { class: 'st st-' + st }, svgUse(ST[st].icon), ST[st].label);
-
   /* tabela acessível ao lado de cada gráfico (botão "Ver tabela") */
   function dataTable(box, head, rows) {
     const old = box.parentNode.querySelector(`table[data-of="${box.id}"]`); if (old) old.remove();
@@ -417,94 +350,56 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
     b.textContent = on ? 'Ver tabela' : 'Ocultar tabela';
   });
 
-  /* barras horizontais: rows [{label, value, st?, sub?}] */
+  /* barras horizontais: rows [{label, value, sub?}] */
   function hbars(box, rows, o = {}) {
     const max = o.max || Math.max(...rows.map(r => r.value)) || 1;
     const f = o.fmt || (v => v);
     box.textContent = '';
-    const wrap = h('div', { class: 'hb' + (o.ref != null ? ' hb-wrap-ref' : ''), style: `--bc:${o.color || 'var(--chart-1)'}` });
-    if (o.ref != null) wrap.append(h('div', { class: 'hb-ref', style: `--x:${o.ref / max * 100}%` }, h('span', { text: o.refLabel || f(o.ref) })));
+    const wrap = h('div', { class: 'hb' });
     rows.forEach(r => {
       const bar = h('i', { style: `width:${Math.max(0.8, r.value / max * 100)}%` });
-      const row = h('div', { class: 'hb-row' + (r.st ? ' is-' + r.st : '') + (o.ref != null && r.value < o.ref ? ' below' : '') },
-        h('span', { class: 'hb-l', text: r.label }),
-        h('span', { class: 'hb-t' }, bar),
-        h('span', { class: 'hb-v' }, f(r.value), r.st && r.st !== 'ok' ? svgUse(ST[r.st].icon, 'hb-ic') : null));
-      bindTip(row, () => [r.label, o.tipFmt ? o.tipFmt(r) : f(r.value), ...(r.sub ? [r.sub] : []), ...(r.st ? [ST[r.st].label] : [])]);
+      const row = h('div', { class: 'hb-row' }, h('span', { class: 'hb-l', text: r.label }), h('span', { class: 'hb-t' }, bar), h('span', { class: 'hb-v', text: f(r.value) }));
+      bindTip(row, () => [r.label, o.tipFmt ? o.tipFmt(r) : f(r.value), ...(r.sub ? [r.sub] : [])]);
       if (o.onPick) { row.classList.add('pick'); row.addEventListener('click', () => o.onPick(r)); row.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); o.onPick(r); } }); }
       wrap.append(row);
     });
     box.append(wrap);
     dataTable(box, o.head || ['Item', 'Valor'], rows.map(r => [r.label, o.tipFmt ? o.tipFmt(r) : String(f(r.value))]));
   }
-
-  /* barra única dividida por situação, com legenda (ícone + rótulo + número) */
-  function stack(box, parts) {
-    const total = parts.reduce((s, p) => s + p.value, 0);
-    box.textContent = '';
-    const bar = h('div', { class: 'stk' });
-    parts.forEach(p => {
-      const seg = h('i', { class: 'st-bg-' + p.st, style: `flex:${p.value}` });
-      bindTip(seg, () => [p.label, `${p.value} de ${total} convênios`]);
-      bar.append(seg);
-    });
-    const leg = h('ul', { class: 'stk-leg' }, parts.map(p => h('li', null, stBadge(p.st), h('b', { text: String(p.value) }))));
-    box.append(bar, leg);
-  }
-
-  /* marcador de mínimo legal: items [{label, value, min, max}] */
-  function bullets(box, items) {
-    box.textContent = '';
-    items.forEach(it => {
-      const ok = it.value >= it.min;
-      const row = h('div', { class: 'bl' },
-        h('div', { class: 'bl-top' }, h('span', { text: it.label }), h('b', { text: pct(it.value) }), stBadge(ok ? 'ok' : 'late')),
-        h('div', { class: 'bl-track' },
-          h('i', { class: 'bl-val' + (ok ? '' : ' low'), style: `width:${it.value / it.max * 100}%` }),
-          h('span', { class: 'bl-min', style: `left:${it.min / it.max * 100}%` }, h('em', { text: 'mínimo ' + pct(it.min) }))));
-      bindTip(row, () => [it.label, 'Aplicado: ' + pct(it.value), 'Mínimo legal: ' + pct(it.min)]);
-      box.append(row);
-    });
-  }
-
   function kpis(box, list) {
     box.textContent = '';
-    list.forEach(k => box.append(h('div', { class: 'kpi' }, h('b', null, k.st ? svgUse(ST[k.st].icon, 'kpi-ic st-c-' + k.st) : null, k.v), h('span', { text: k.l }))));
+    list.forEach(k => box.append(h('div', { class: 'kpi' }, h('b', { text: k.v }), h('span', { text: k.l }))));
   }
 
   /* ---------- projetos contemplados ---------- */
   PROJETOS.forEach(p => { p.slug = slug(p.municipio + '-' + p.uf); });
-  const projBox = $('#projList'), projDlg = $('#projDlg');
-  function openProjeto(s) {
+  const projBox = $('#projList'), projUF = $('#projUF'), projDlg = $('#projDlg');
+  function openProjeto(s, fromHistory) {
     const p = PROJETOS.find(x => x.slug === s); if (!p || !projDlg) return;
-    const body = $('#projDlgBody'); body.textContent = '';
     const mesmaUF = PROJETOS.filter(x => x.uf === p.uf);
     const totalUF = mesmaUF.reduce((a, x) => a + x.valor, 0);
+    const body = $('#projDlgBody');
+    body.textContent = '';
     body.append(
-      h('span', { class: 'mono', text: 'Projeto contemplado · ' + (NOMES_UF[p.uf] || p.uf) }),
+      h('p', { class: 'eyebrow', text: 'Projeto contemplado' }),
       h('h2', { id: 'projDlgT', text: `${p.municipio}/${p.uf}` }),
-      h('p', { class: 'dlg-lead', text: `${p.programa} aprovado e pago no valor de ${brl(p.valor)} para o Município de ${p.municipio}/${p.uf}.` }),
-      h('dl', { class: 'facts-dl' },
+      h('dl', { class: 'proj-facts' },
         h('div', null, h('dt', { text: 'Valor pago' }), h('dd', { text: brl(p.valor) })),
-        h('div', null, h('dt', { text: 'Pago em' }), h('dd', { text: p.pago })),
+        h('div', null, h('dt', { text: 'Data do pagamento' }), h('dd', { text: p.pago })),
         h('div', null, h('dt', { text: 'Programa' }), h('dd', { text: p.programa })),
         h('div', null, h('dt', { text: 'Situação' }), h('dd', null, h('span', { class: 'paid', text: 'PAGO' })))),
       h('h3', { text: `Projetos pagos em ${NOMES_UF[p.uf] || p.uf}` }),
       h('div', { class: 'chart', id: 'chDlg' }),
       h('p', { class: 'chart-note', text: `${mesmaUF.length} ${mesmaUF.length > 1 ? 'projetos somam' : 'projeto soma'} ${brl(totalUF)} no estado.` }),
       h('div', { class: 'dlg-acts' },
-        h('a', { class: 'btn btn-gold', href: '#contato', 'data-close': '', 'data-tipo': 'Pré-diagnóstico' }, 'Quero um resultado assim', svgUse('i-arr', 'arr'))));
-    hbars($('#chDlg'), mesmaUF.map(x => ({ label: x.municipio, value: x.valor, cur: x.slug === p.slug })), { fmt: brlShort, tipFmt: r => brl(r.value), head: ['Município', 'Valor pago'] });
+        h('a', { class: 'btn btn-gold', href: '#contato', 'data-close': '', 'data-tipo': 'Diagnóstico gratuito' }, 'Quero um resultado assim', svgUse('i-arr', 'arr'))));
+    hbars($('#chDlg'), mesmaUF.map(x => ({ label: x.municipio, value: x.valor })), { fmt: brlShort, tipFmt: r => brl(r.value), head: ['Município', 'Valor pago'] });
     $$('#chDlg .hb-row').forEach((r, i) => r.classList.toggle('cur', mesmaUF[i].slug === p.slug));
-    openDlg(projDlg);
-    history.replaceState(null, '', '#projeto-' + p.slug);
+    if (fromHistory) { projDlg.showModal(); lockScroll(true); overlays.set('dlg-projDlg', () => { if (projDlg.open) projDlg.close(); }); }
+    else openDlg(projDlg, '#projeto-' + p.slug);
   }
-  if (projDlg) {
-    projDlg.addEventListener('dlg:closed', () => { if (location.hash.startsWith('#projeto-')) history.replaceState(null, '', location.pathname + location.search); });
-    addEventListener('hashchange', () => { const id = location.hash.slice(1); if (/^projeto-/.test(id)) openProjeto(id.slice(8)); });
-  }
-  if (projBox) {
-    const ufBox = $('#projUF');
+  if (projUF) {
+    const ufBox = projUF;
     const ufs = [...new Set(PROJETOS.map(p => p.uf))].sort();
     ufBox.append(h('button', { type: 'button', 'aria-pressed': 'true', 'data-uf': '' }, 'Todos'));
     ufs.forEach(u => ufBox.append(h('button', { type: 'button', 'aria-pressed': 'false', 'data-uf': u, title: NOMES_UF[u] }, u)));
@@ -523,33 +418,21 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
       const porUF = ufs.map(u => { const l = PROJETOS.filter(p => p.uf === u); return { label: NOMES_UF[u] || u, uf: u, value: l.reduce((a, p) => a + p.valor, 0), sub: `${l.length} ${l.length > 1 ? 'projetos' : 'projeto'}` }; }).sort((a, b) => b.value - a.value);
       hbars($('#chUF'), porUF, { fmt: brlShort, tipFmt: r => brl(r.value), head: ['Estado', 'Total pago'] });
       $$('#chUF .hb-row').forEach((r, i) => r.classList.toggle('dim', !!uf && porUF[i].uf !== uf));
-      projBox.textContent = '';
-      list.forEach(p => projBox.append(h('button', { type: 'button', class: 'proj', 'data-proj': p.slug },
-        h('div', { class: 'top' }, h('span', { class: 'mono', text: p.uf }), h('span', { class: 'paid', text: 'PAGO' })),
+      if (projBox) projBox.textContent = '';
+      if (projBox) list.forEach(p => projBox.append(h('button', { type: 'button', class: 'proj', 'data-proj': p.slug },
+        h('span', { class: 'paid', text: 'PAGO' }),
         h('b', { text: `${p.municipio}/${p.uf}` }),
         h('span', { class: 'prog', text: p.programa }),
-        h('span', { class: 'val', text: brl(p.valor) }),
-        h('span', { class: 'go' }, 'Ver projeto', svgUse('i-arr')))));
+        h('span', { class: 'val', text: brl(p.valor) }))));
     };
     ufBox.addEventListener('click', e => {
       const b = e.target.closest('button'); if (!b) return;
       ufBox.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
       draw(b.dataset.uf);
     });
-    projBox.addEventListener('click', e => { const b = e.target.closest('[data-proj]'); if (b) openProjeto(b.dataset.proj); });
+    if (projBox) projBox.addEventListener('click', e => { const b = e.target.closest('[data-proj]'); if (b) openProjeto(b.dataset.proj); });
     draw('');
   }
-
-  /* ---------- painéis de exemplo dos módulos ---------- */
-  $$('[data-demo-kpis]').forEach(b => kpis(b, DEMO[b.dataset.demoKpis + 'Kpis'] || []));
-  $$('[data-demo]').forEach(b => {
-    const k = b.dataset.demo, d = DEMO[k];
-    if (k === 'gestaoStatus') stack(b, d);
-    else if (k === 'gestaoExec') hbars(b, d, { max: 100, fmt: pct, color: 'var(--chart-gestao)', head: ['Convênio', 'Executado'] });
-    else if (k === 'eduMinimos' || k === 'saudeMinimo') bullets(b, d);
-    else if (k === 'eduProgramas') hbars(b, d, { max: 100, fmt: pct, color: 'var(--chart-edu)', head: ['Programa', 'Executado'] });
-    else if (k === 'escolaFreq') hbars(b, d, { max: 100, fmt: pct, color: 'var(--chart-esc)', ref: 75, refLabel: 'mínimo 75%', head: ['Escola', 'Frequência média'] });
-  });
 
   /* ---------- atas de registro de preço ---------- */
   const atasBox = $('#atasBox');
@@ -566,23 +449,23 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
       });
       t.append(tb); atasBox.append(h('div', { class: 'atas' }, t));
     } else {
-      atasBox.append(h('h3', { text: 'Ata vigente para adesão' }),
-        h('p', { text: 'A ata vigente, o termo de referência e a pesquisa de preços seguem junto com a proposta comercial, prontos para anexar ao processo de adesão.' }),
-        h('ul', { class: 'atas-docs' }, ['Ata de registro de preços', 'Termo de referência', 'Pesquisa de preços', 'Modelo de justificativa da vantagem'].map(t => h('li', { text: t }))));
+      atasBox.append(h('h3', { text: 'Documentos para a adesão' }),
+        h('p', { text: 'A ata vigente, o termo de referência e a pesquisa de preços são enviados com a proposta comercial, prontos para anexar ao processo de adesão.' }),
+        h('ul', { class: 'checks' }, ['Ata de registro de preços', 'Termo de referência', 'Pesquisa de preços', 'Modelo de justificativa da vantagem'].map(t => h('li', { text: t }))));
     }
   }
 
-  /* ---------- turmas dos encontros ---------- */
+  /* ---------- turmas dos eventos ---------- */
   const turmaLabel = t => `${EVENTOS[t.evento].nome} · ${t.cidade}/${t.uf} · ${t.datas}`;
   const origemDe = t => t.status === 'confirmada' ? 'Inscrição curso' : 'Interesse curso';
   $$('[data-turmas]').forEach(box => {
     TURMAS.filter(t => t.evento === box.dataset.turmas).forEach(t => box.append(
-      h('button', { type: 'button', class: 'turma', 'data-pick': turmaLabel(t) }, `${t.cidade}/${t.uf}`, h('small', { text: t.datas }),
-        h('em', { class: t.status === 'confirmada' ? 'conf' : '', text: t.status === 'confirmada' ? 'Turma confirmada' : 'Em formação' }))));
+      h('button', { type: 'button', class: 'turma', 'data-pick': turmaLabel(t) }, h('b', { text: `${t.cidade}/${t.uf}` }), h('small', { text: t.datas }),
+        h('em', { class: t.status === 'confirmada' ? 'conf' : '', text: t.status === 'confirmada' ? 'Turma confirmada' : 'Inscrições abertas' }))));
   });
   const turmaSel = $('#f-turma');
   if (turmaSel) {
-    turmaSel.append(h('option', { value: '' }, 'Escolha o encontro e a cidade'));
+    turmaSel.append(h('option', { value: '' }, 'Escolha o evento, a cidade e a data'));
     TURMAS.forEach(t => turmaSel.append(h('option', { value: turmaLabel(t), 'data-origem': origemDe(t), 'data-evento': t.evento }, turmaLabel(t))));
   }
   const syncOrigem = () => {
@@ -592,7 +475,8 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
   document.addEventListener('click', e => {
     const b = e.target.closest('[data-pick]'); if (!b || !turmaSel) return;
     turmaSel.value = b.dataset.pick; syncOrigem(); turmaSel.dispatchEvent(new Event('change'));
-    const d = b.closest('dialog'); if (d) { d.close(); lockScroll(false); }
+    const d = b.closest('dialog'); if (d) d.close();
+    else { saveY(); history.pushState({ a: 1 }, '', '#inscricao'); }
     goTo($('#inscricao'));
   });
 
@@ -642,9 +526,9 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
     const m = el.dataset.mask;
     if (m === 'cpf' && !validCPF(v)) return 'CPF inválido.';
     if (m === 'cnpj' && !validCNPJ(v)) return 'CNPJ inválido.';
-    if (m === 'tel' && !/^\d{10,11}$/.test(digits(v))) return 'Telefone com DDD.';
+    if (m === 'tel' && !/^\d{10,11}$/.test(digits(v))) return 'Informe o telefone com DDD.';
     if (el.minLength > 0 && v.length < el.minLength) return `Escreva pelo menos ${el.minLength} caracteres.`;
-    if (el.type === 'number' && v && (+v < +(el.min || 0) || (el.max && +v > +el.max))) return 'Número fora do intervalo.';
+    if (el.type === 'number' && v && (+v < +(el.min || 0) || (el.max && +v > +el.max))) return 'Número fora do intervalo permitido.';
     return '';
   }
   function mark(el, msg) {
@@ -677,6 +561,8 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
     if (el.matches && el.matches('form.lead input, form.lead select, form.lead textarea') && el.type !== 'radio' && el.closest('.field.bad, .consent.bad')) mark(el, fieldError(el));
   });
   document.addEventListener('change', e => { const el = e.target; if (el.matches && el.matches('form.lead .bad input, form.lead .bad select')) mark(el, fieldError(el)); });
+  /* o aviso some enquanto a pessoa corrige o campo: assim o layout não pula na hora de clicar em "Continuar" */
+  document.addEventListener('input', e => { const el = e.target; if (el.matches && el.matches('form.lead .bad input, form.lead .bad textarea') && !fieldError(el)) mark(el, ''); });
 
   /* contador de caracteres */
   $$('textarea[data-count]').forEach(t => {
@@ -719,7 +605,7 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
       const corpo = Object.entries(data).map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v}`).join('\n');
       location.href = `mailto:${FORM_EMAIL}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
       store.set(key, Date.now());
-      return say(`Abrimos o seu e-mail com o pedido preenchido. Confira e clique em enviar. Se ele não abrir, escreva para ${FORM_EMAIL}.`);
+      return say(`Abrimos o seu e-mail com a mensagem preenchida. Confira e clique em enviar. Se ele não abrir, escreva para ${FORM_EMAIL}.`);
     }
     btn.disabled = true; btn.setAttribute('aria-busy', 'true');
     const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 15000);
@@ -730,7 +616,7 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
       say(form.dataset.ok);
       form.reset(); form.dispatchEvent(new Event('sig:reset'));
     } catch (err) {
-      say(`Não conseguimos enviar agora. Tente de novo ou escreva para ${FORM_EMAIL}.`, true);
+      say(`Não foi possível enviar agora. Tente de novo ou escreva para ${FORM_EMAIL}.`, true);
     } finally { clearTimeout(to); btn.disabled = false; btn.removeAttribute('aria-busy'); }
   }
   $$('form.lead').forEach(f => {
@@ -745,7 +631,7 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
     });
   });
 
-  /* ---------- pré-diagnóstico em etapas ---------- */
+  /* ---------- formulário de contato em etapas ---------- */
   const wiz = $('#diagForm');
   function setTipo(v) {
     if (!wiz) return;
@@ -766,11 +652,11 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
       if (bad) { bad.focus(); return; }
       go(cur + 1);
       const f = panes[cur].querySelector('input:not([type=radio]):not([type=checkbox]), select, textarea'); if (f) f.focus({ preventScroll: true });
-      if (wiz.getBoundingClientRect().top < 0) goTo(wiz, -100);
+      if (wiz.getBoundingClientRect().top < 0) goTo(wiz);
     });
     prev.addEventListener('click', () => go(cur - 1));
     marks.forEach((m, k) => m.addEventListener('click', () => { if (k < cur) go(k); }));
-    /* módulos marcados abrem as perguntas de cada módulo */
+    /* áreas marcadas abrem as perguntas de cada área */
     const syncMods = () => $$('[data-modq]', wiz).forEach(q => {
       const on = !!$(`input[data-mod="${q.dataset.modq}"]:checked`, wiz);
       q.hidden = !on; $$('input, select, textarea', q).forEach(i => { i.disabled = !on; });
@@ -783,12 +669,10 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
   /* ---------- inscrição com vários participantes ---------- */
   const insc = $('#inscForm');
   if (insc) {
-    const people = $('#people'), tpl = $('#personTpl'), out = $('#t-qtd'), maxTxt = $('#t-qtd-max'), totalBox = $('#t-total');
+    const people = $('#people'), tpl = $('#personTpl'), out = $('#t-qtd'), maxTxt = $('#t-qtd-max');
     const FIELDS = ['nome', 'cpf', 'funcao', 'email', 'telefone'];
     const resp = { nome: $('#t-rnome'), email: $('#t-rmail'), telefone: $('#t-rtel') };
     let n = 1;
-    const isPF = () => !!$('input[name="pagador"][data-payer="pf"]:checked', insc);
-    const maxN = () => isPF() ? 1 : MAX_PARTICIPANTES;
     const copyResp = card => {
       const same = card.querySelector('[data-same]'); if (!same || !same.checked) return;
       Object.keys(resp).forEach(k => { const i = card.querySelector(`[data-f="${k}"]`); i.value = resp[k].value; i.readOnly = true; });
@@ -812,52 +696,39 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
           });
         }
         people.append(card);
-        if (!reduce && k > 1) card.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 350, easing: 'cubic-bezier(.22,1,.36,1)' });
       }
       while (people.children.length > n) people.lastElementChild.remove();
       out.value = out.textContent = String(n);
       $('[data-qty="-1"]', insc).disabled = n <= 1;
-      $('[data-qty="1"]', insc).disabled = n >= maxN();
-      maxTxt.textContent = isPF() ? 'Pessoa física: inscrição individual' : `Até ${MAX_PARTICIPANTES} por município`;
-      total();
-    };
-    const total = () => {
-      const o = turmaSel && turmaSel.selectedOptions[0], ev = o && EVENTOS[o.dataset.evento];
-      totalBox.textContent = '';
-      if (!ev) { totalBox.append(h('span', { text: 'Escolha a turma para ver o valor.' })); return; }
-      totalBox.append(h('span', { text: `${n} × ${brl(ev.preco)}` }), h('b', { text: brl(n * ev.preco) }));
-      const cli = $('input[name="contrato"]:checked', insc);
-      if (cli && cli.value === 'Sim') totalBox.append(h('small', { text: 'Municípios com contrato vigente e em dia podem ter isenção pelo link exclusivo. A equipe confirma na validação.' }));
+      $('[data-qty="1"]', insc).disabled = n >= MAX_PARTICIPANTES;
+      maxTxt.textContent = `Até ${MAX_PARTICIPANTES} por município`;
     };
     insc.addEventListener('click', e => {
       const b = e.target.closest('[data-qty]'); if (!b) return;
-      n = Math.min(maxN(), Math.max(1, n + +b.dataset.qty)); render();
+      n = Math.min(MAX_PARTICIPANTES, Math.max(1, n + +b.dataset.qty)); render();
       if (+b.dataset.qty > 0) { const f = people.lastElementChild.querySelector('input'); if (f) f.focus({ preventScroll: true }); }
     });
-    const syncPayer = () => {
-      const pf = isPF();
-      $$('[data-payer-pj]', insc).forEach(el => { el.hidden = pf; $$('input', el).forEach(i => { i.disabled = pf; }); });
-      $$('[data-payer-pf]', insc).forEach(el => { el.hidden = !pf; });
-      if (pf) n = 1; render();
-    };
-    insc.addEventListener('change', e => {
-      if (e.target.name === 'pagador') syncPayer();
-      if (e.target.name === 'contrato' || e.target === turmaSel) { syncOrigem(); total(); }
-    });
+    insc.addEventListener('change', e => { if (e.target === turmaSel) syncOrigem(); });
     Object.values(resp).forEach(i => i.addEventListener('input', () => { const c = people.firstElementChild; if (c) copyResp(c); }));
-    insc.addEventListener('sig:reset', () => { n = 1; people.textContent = ''; syncPayer(); syncOrigem(); });
-    syncPayer();
+    insc.addEventListener('sig:reset', () => { n = 1; people.textContent = ''; render(); syncOrigem(); });
+    render();
   }
 
-  /* ---------- políticas (modal) ---------- */
+  /* ---------- políticas (janela) ---------- */
   const legal = $('#legal');
   if (legal) {
     const tabs = $$('.legal-tabs button', legal), panels = $$('[data-panel]', legal);
     const TABS = tabs.map(b => b.dataset.tab);
     const tab = t => { tabs.forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t))); panels.forEach(p => { p.hidden = p.dataset.panel !== t; }); $('.legal-body', legal).scrollTop = 0; };
     let lastFocus = null;
-    const open = t => { lastFocus = document.activeElement; tab(TABS.includes(t) ? t : 'privacidade'); legal.hidden = false; lockScroll(true); $('#legalClose').focus(); };
-    const close = () => { legal.hidden = true; lockScroll(false); if (lastFocus) lastFocus.focus(); };
+    const hide = () => { legal.hidden = true; lockScroll(false); if (lastFocus) lastFocus.focus(); };
+    const open = t => {
+      lastFocus = document.activeElement; tab(TABS.includes(t) ? t : 'privacidade');
+      if (!legal.hidden) return;
+      legal.hidden = false; lockScroll(true); $('#legalClose').focus();
+      overlayOpened('legal', hide);
+    };
+    const close = () => { if (legal.hidden) return; hide(); overlayClosed('legal'); };
     document.addEventListener('click', e => { const a = e.target.closest('[data-legal]'); if (!a) return; e.preventDefault(); open(a.dataset.legal); });
     tabs.forEach(b => b.addEventListener('click', () => tab(b.dataset.tab)));
     $('#legalClose').addEventListener('click', close);
@@ -871,7 +742,7 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
         else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
       }
     });
-    if (TABS.includes(location.hash.slice(1))) open(location.hash.slice(1));
+    if (TABS.includes(location.hash.slice(1))) { history.replaceState(null, '', location.pathname); open(location.hash.slice(1)); }
   }
 
   /* ---------- barra de cookies (escolha guardada por 30 dias) ---------- */
@@ -880,8 +751,7 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
     const KEY = 'sigemec-cookies', DAYS30 = 30 * 864e5;
     const saved = store.get(KEY);
     const fresh = saved && Date.now() - saved.t < DAYS30;
-    const place = () => document.documentElement.style.setProperty('--cookie-h', bar.offsetHeight + 'px');
-    if (!fresh) { bar.hidden = false; document.body.classList.add('has-cookie'); place(); addEventListener('resize', place); }
+    if (!fresh) { bar.hidden = false; document.body.classList.add('has-cookie'); }
     $('#cookieOk').addEventListener('click', () => { store.set(KEY, { ok: true, t: Date.now() }); bar.hidden = true; document.body.classList.remove('has-cookie'); });
   }
 
@@ -900,58 +770,4 @@ const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","P
       v.textContent = ''; v.append(f);
     }, { once: true });
   });
-
-  /* ---------- títulos e números grandes sempre dentro da coluna ----------
-     Se a largura do texto passa da caixa (tela estreita, fonte que não carregou, número maior),
-     reduz o tamanho só o necessário. Recalcula ao redimensionar e quando as fontes terminam de carregar. */
-  const FIT = '.hero h1,.phero h1,.article h1,.stat b,.module-id .word strong,.sec-head h2,.ct-grid h2,.insc-head h2,.promo h2,.cta-band h2,.suppliers h2,.rings-label b,.big-say,.dlg h2,.ticket .t-top b,.plan .pr,.pain .n,.mq-item b';
-  const overflow = el => {
-    const box = el.getBoundingClientRect(), cs = getComputedStyle(el);
-    const left = box.left + parseFloat(cs.paddingLeft);
-    /* limite: a própria caixa ou a margem do conteúdo da página, o que vier antes */
-    const wrap = el.closest('.wrap'), wr = wrap ? wrap.getBoundingClientRect().right - parseFloat(getComputedStyle(wrap).paddingRight) : document.documentElement.clientWidth;
-    const right = Math.min(box.left + el.clientWidth - parseFloat(cs.paddingRight), wr);
-    const r = document.createRange(); r.selectNodeContents(el);
-    let max = 0; for (const q of r.getClientRects()) max = Math.max(max, q.right);
-    return { over: max - right, avail: right - left, size: parseFloat(cs.fontSize) };
-  };
-  const fitOne = el => {
-    el.style.fontSize = '';
-    if (!el.clientWidth) return;
-    /* repete porque a caixa pode encolher junto com a letra (larguras em ch) e o texto se redistribui nas linhas */
-    for (let i = 0; i < 10; i++) {
-      const m = overflow(el);
-      if (m.over <= 0.5) break;
-      el.style.fontSize = (m.size * Math.min(0.96, m.avail / (m.avail + m.over) * 0.98)) + 'px';
-    }
-  };
-  const fitAll = () => $$(FIT).forEach(el => { if (!el.closest('.mq-row')) fitOne(el); });
-  fitAll();
-  /* a troca de fonte acontece depois dos eventos de carregamento: refaz no quadro seguinte */
-  const fitSoon = () => requestAnimationFrame(() => requestAnimationFrame(fitAll));
-  if (document.fonts) {
-    document.fonts.ready.then(fitSoon);
-    document.fonts.addEventListener('loadingdone', fitSoon);
-    document.fonts.addEventListener('loadingerror', fitSoon);
-  }
-  addEventListener('load', fitSoon);
-  /* nos primeiros segundos, confere se algo passou da caixa (só leitura; ajusta apenas o que estourou) */
-  const fitWatch = setInterval(() => $$(FIT).forEach(el => { if (el.clientWidth && !el.closest('.mq-row') && overflow(el).over > 0.5) fitOne(el); }), 250);
-  setTimeout(() => clearInterval(fitWatch), 8000);
-  let fitT; addEventListener('resize', () => { clearTimeout(fitT); fitT = setTimeout(fitAll, 120); });
-
-  /* ---------- cursor ---------- */
-  const cur = $('.cursor');
-  if (cur && matchMedia('(pointer: fine)').matches && !reduce) {
-    let mx = -100, my = -100, cx = -100, cy = -100;
-    addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-    const loop = () => { cx += (mx - cx) * 0.2; cy += (my - cy) * 0.2; cur.style.transform = `translate(${cx}px,${cy}px)`; requestAnimationFrame(loop); };
-    loop();
-    document.addEventListener('mouseover', e => cur.classList.toggle('big', !!e.target.closest('a,button,label,summary,.hb-row')));
-  } else if (cur) cur.remove();
-
-  const onResize = () => { sizeMethod(); methodScroll(); photoScroll(); if (hasGsap) ScrollTrigger.refresh(); };
-  addEventListener('resize', onResize);
-  addEventListener('load', onResize);
-  onResize();
 })();

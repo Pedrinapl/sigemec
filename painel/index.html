@@ -4,28 +4,26 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; connect-src 'none'; form-action 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://api.github.com; form-action 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#081628">
 <title>Painel SIGEMEC</title>
-<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/img/simbolo-64.png" type="image/png">
 <link rel="preload" href="../assets/fonts/Archivo-4c18bbf2.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../assets/fonts.css?v=35cdc05a">
-<link rel="stylesheet" href="painel.css?v=35cdc05a">
-<script src="painel.js?v=35cdc05a" defer></script>
+<link rel="stylesheet" href="../assets/fonts.css">
+<link rel="stylesheet" href="painel.css?v=9b94119f">
+<script src="painel.js?v=4d27feef" defer></script>
 </head>
 <body>
-
-<template id="logo"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="50" cy="50" r="33" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="50" cy="50" r="21" fill="none" stroke="currentColor" stroke-width="6"/><path d="M57 41.5c-1.6-2.6-4.2-3.8-7.2-3.8-3.8 0-6.6 2-6.6 5 0 7.2 14.6 3.6 14.6 11.6 0 3.4-3.2 5.9-7.8 5.9-3.4 0-6.2-1.4-7.8-4.2" fill="none" stroke="currentColor" stroke-width="4.2" stroke-linecap="round"/></svg></template>
 
 <!-- LOGIN -->
 <section class="login" id="login" aria-label="Acesso ao painel" hidden>
   <div class="l-art">
-    <div class="l-brand" data-logo><div><b>SIGEMEC</b> <small>group</small></div></div>
+    <div class="l-brand" data-logo></div>
     <div class="l-stage">
       <div class="chip-f" style="--c:var(--esc)"><i></i><span><b data-up="16.84" data-dec="2" data-pre="R$ " data-suf=" mi">R$ 0</b><br>pagos em 18 projetos</span></div>
       <div class="chip-f" style="--c:var(--sau)"><i></i><span><b data-up="38" data-pre="+">0</b><br>pedidos em 30 dias</span></div>
-      <div class="chip-f" style="--c:var(--edu)"><i></i><span><b data-up="64">0</b><br>inscrições nos encontros</span></div>
+      <div class="chip-f" style="--c:var(--gold)"><i></i><span><b data-up="64">0</b><br>inscrições nos encontros</span></div>
       <div class="chip-f" style="--c:var(--gold)"><i></i><span><b data-up="92" data-suf="%">0</b><br>respondidos em 1 dia útil</span></div>
       <div class="l-rings" id="lRings">
         <svg viewBox="0 0 200 200" aria-hidden="true">
@@ -39,7 +37,7 @@
     </div>
     <div class="l-head" id="lHead">
       <h1 aria-label="Seja bem-vindo aos seus resultados.">Seja bem-vindo aos seus <em>resultados.</em></h1>
-      <p>Pedidos, inscrições, cursos e o conteúdo do site num lugar só, atualizados em tempo real para a equipe.</p>
+      <p>Pedidos, inscrições, cursos e todo o conteúdo do site em um só lugar, atualizados em tempo real para a equipe.</p>
       <div class="l-ticker" aria-hidden="true"><div id="lTicker"></div></div>
     </div>
   </div>
@@ -84,10 +82,10 @@
 
 <!-- PAINEL -->
 <div class="app" id="app" hidden>
-  <div class="top-m"><div class="s-brand" data-logo><div><b>SIGEMEC</b><span>Painel do site</span></div></div><button type="button" id="navBtn" aria-label="Abrir menu" aria-expanded="false" aria-controls="side"></button></div>
+  <div class="top-m"><div class="s-brand" data-logo><span>Painel do site</span></div><button type="button" id="navBtn" aria-label="Abrir menu" aria-expanded="false" aria-controls="side"></button></div>
   <div class="scrim" id="scrim"></div>
   <aside class="side" id="side" aria-label="Menu do painel">
-    <div class="s-brand" data-logo><div><b>SIGEMEC</b><span>Painel do site</span></div></div>
+    <div class="s-brand" data-logo><span>Painel do site</span></div>
     <nav class="s-nav" id="sNav" aria-label="Seções do painel"></nav>
     <div class="s-foot">
       <div class="s-user"><span class="av" id="uAv">CO</span><div><b id="uName">Equipe comercial</b><span>Verificação em 2 etapas ativa</span></div></div>

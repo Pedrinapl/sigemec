@@ -7,7 +7,7 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const NS = 'http://www.w3.org/2000/svg';
-  const KEY = 'sgm-painel-v4';
+  const KEY = 'sgm-painel-v5';
   const AUTH = 'sgm-painel-auth';
   const DEMO_CODE = '246810';
 
@@ -26,7 +26,7 @@
     menu: 'M4 7h16M4 12h16M4 17h16', mail: 'M3 6h18v12H3zM3 7l9 6 9-6', copy: 'M8 8h12v12H8zM4 16V4h12', layers: 'M12 3l9 5-9 5-9-5zM3 13l9 5 9-5', award: 'M12 3a6 6 0 1 0 0 12 6 6 0 0 0 0-12zM8.5 14 7 21l5-3 5 3-1.5-7',
     money: 'M3 6h18v12H3zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM6 9v.01M18 15v.01', mic: 'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3',
     globe: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18', refresh: 'M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7',
-    quote: 'M7 7h4v4c0 3-2 5-4 6M14 7h4v4c0 3-2 5-4 6', hash: 'M5 9h14M5 15h14M10 4 8 20M16 4l-2 16', send: 'M4 12l16-8-6 16-3-7z'
+    quote: 'M7 7h4v4c0 3-2 5-4 6M14 7h4v4c0 3-2 5-4 6', code: 'M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 4l-3 16', back: 'M20 12H5M11 6l-6 6 6 6', hash: 'M5 9h14M5 15h14M10 4 8 20M16 4l-2 16', send: 'M4 12l16-8-6 16-3-7z'
   };
   function ic(n) {
     const s = document.createElementNS(NS, 'svg'); s.setAttribute('class', 'ic'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('aria-hidden', 'true');
@@ -81,10 +81,10 @@
     const step = t => { const k = Math.min(1, (t - t0) / dur); el.textContent = f(to * (1 - Math.pow(1 - k, 4))); if (k < 1) requestAnimationFrame(step); };
     requestAnimationFrame(step);
   }
-  const logo = () => $('#logo').content.firstElementChild.cloneNode(true);
+  const logo = () => h('img', { class: 'logo-img', src: '../assets/img/logo-sigemec-branco.png', alt: 'SIGEMEC', width: 219, height: 24 });
 
   /* ---------- dados de exemplo ---------- */
-  const MOD = { 'Gestão': '#B07E10', 'Educação': '#D9532B', 'Saúde': '#1E7FAE', 'Escola': '#23944A' };
+  const MOD = { 'Consultoria': '#B07E10', 'Gestão e Controle': '#3E5C8A', 'Gestão Escolar': '#23944A', 'Saúde': '#1E7FAE' };
   const ST = { novo: 'Novo', contato: 'Em contato', proposta: 'Proposta enviada', fechado: 'Contrato fechado' };
   const PS = ['Pré-inscrito', 'Validado', 'Pago', 'Isento'];
   const PSC = { 'Pré-inscrito': 'p-mute', 'Validado': 'p-warn', 'Pago': 'p-ok', 'Isento': 'p-info' };
@@ -94,15 +94,15 @@
     const P = (id, data, mun, orgao, resp, cargo, tipo, mods, status, cpf, email, tel, urg, pop, answers, desc) => ({ id, data, mun, orgao, resp, cargo, tipo, mods, status, cpf, cnpj: '••.•••.•••/0001-•• (validado)', email, tel, urg, pop, answers, desc, notas: [] });
     const d = {
       pedidos: [
-        P('p1', '2026-10-26', 'Tianguá/CE', 'Secretaria de Educação', 'Marta Albuquerque', 'Secretária de Educação', 'Pré-diagnóstico', ['Educação', 'Gestão'], 'novo', '•••.318.442-••', 'm.albuquerque@[municipio].gov.br', '(88) 9••••-••12', 'Recurso bloqueado por pendência', '30 a 100 mil', [['PAR Ciclo 5', 'Em andamento'], ['PNAE, PNATE e PDDE', 'Algum com pendência'], ['Escolas na rede', '41']], 'Temos duas obras de creche paradas desde 2022 e a prestação de contas do PNAE de 2024 está em diligência no SIGPC. Precisamos regularizar antes de cadastrar novas ações do PAR.'),
-        P('p2', '2026-10-25', 'Salinópolis/PA', 'Prefeitura Municipal', 'José Carvalho', 'Controlador-geral', 'Proposta e ata', ['Gestão'], 'contato', '•••.902.115-••', 'controladoria@[municipio].gov.br', '(91) 9••••-••40', 'Captar novos recursos', '30 a 100 mil', [['Obra ou convênio paralisado', 'Sim, 1 ou 2'], ['Plataformas', 'Transferegov, SIMEC']], 'Queremos a ata vigente e a proposta para aderir ainda neste exercício. A controladoria precisa da pesquisa de preços para anexar ao processo.'),
-        P('p3', '2026-10-24', 'Cachoeirinha/RS', 'Secretaria de Educação', 'Paula Menezes', 'Diretora pedagógica', 'Pré-diagnóstico', ['Escola'], 'proposta', '•••.554.870-••', 'p.menezes@[municipio].gov.br', '(51) 9••••-••77', 'Implantar sistema de gestão', '100 a 500 mil', [['Registro de notas hoje', 'Parte em papel'], ['Escolas que usariam', '38']], 'A rede usa planilhas em metade das escolas. Queremos centralizar matrícula e frequência antes do Censo de 2027.'),
-        P('p4', '2026-10-23', 'Cururupu/MA', 'Secretaria de Saúde', 'Renata Lima', 'Secretária de Saúde', 'Pré-diagnóstico', ['Saúde', 'Gestão'], 'novo', '•••.230.661-••', 'saude@[municipio].gov.br', '(98) 9••••-••03', 'Prazo de prestação de contas', '30 a 100 mil', [['Plano Municipal de Saúde', 'Em elaboração'], ['RAG e RDQA', 'Com atraso']], 'O RDQA do segundo quadrimestre não foi apresentado na Câmara e o Plano Municipal de Saúde 2026–2029 ainda está em elaboração.'),
-        P('p5', '2026-10-22', 'Monteiro/PB', 'Secretaria de Educação', 'Carlos Nóbrega', 'Técnico do PAR', 'Treinamento in company', ['Educação'], 'fechado', '•••.775.304-••', 'par@[municipio].gov.br', '(83) 9••••-••58', 'Organizar e capacitar a equipe', '30 a 100 mil', [['PAR Ciclo 5', 'Concluído'], ['Alunos matriculados', '6.200']], 'Queremos uma turma fechada para 25 técnicos sobre SIGPC Ágil e Fundeb 2027.'),
-        P('p6', '2026-10-21', 'Igarassu/PE', 'Prefeitura Municipal', 'Ana Paula Souto', 'Secretária de Planejamento', 'Pré-diagnóstico', ['Gestão', 'Educação', 'Saúde'], 'contato', '•••.418.239-••', 'planejamento@[municipio].gov.br', '(81) 9••••-••91', 'Obra parada', '100 a 500 mil', [['Obra ou convênio paralisado', 'Sim, 3 ou mais'], ['Diagnóstico do PAR', 'Não sei']], 'Três convênios com obra parada e saldo em conta. Precisamos entender se ainda dá para reprogramar ou se teremos de devolver.')
+        P('p1', '2026-10-26', 'Tianguá/CE', 'Secretaria de Educação', 'Marta Albuquerque', 'Secretária de Educação', 'Diagnóstico gratuito', ['Consultoria', 'Gestão e Controle'], 'novo', '•••.318.442-••', 'm.albuquerque@[municipio].gov.br', '(88) 9••••-••12', 'Recurso bloqueado por pendência', '30 a 100 mil', [['PAR Ciclo 5', 'Em andamento'], ['PNAE, PNATE e PDDE', 'Algum com pendência'], ['Escolas na rede', '41']], 'Temos duas obras de creche paradas desde 2022 e a prestação de contas do PNAE de 2024 está em diligência no SIGPC. Precisamos regularizar antes de cadastrar novas ações do PAR.'),
+        P('p2', '2026-10-25', 'Salinópolis/PA', 'Prefeitura Municipal', 'José Carvalho', 'Controlador-geral', 'Orçamento e ata', ['Gestão e Controle'], 'contato', '•••.902.115-••', 'controladoria@[municipio].gov.br', '(91) 9••••-••40', 'Captar novos recursos', '30 a 100 mil', [['Obra ou convênio paralisado', 'Sim, 1 ou 2'], ['Plataformas', 'Transferegov, SIMEC']], 'Queremos a ata vigente e a proposta para aderir ainda neste exercício. A controladoria precisa da pesquisa de preços para anexar ao processo.'),
+        P('p3', '2026-10-24', 'Cachoeirinha/RS', 'Secretaria de Educação', 'Paula Menezes', 'Diretora pedagógica', 'Diagnóstico gratuito', ['Gestão Escolar'], 'proposta', '•••.554.870-••', 'p.menezes@[municipio].gov.br', '(51) 9••••-••77', 'Implantar sistema de gestão', '100 a 500 mil', [['Registro de notas hoje', 'Parte em papel'], ['Escolas que usariam', '38']], 'A rede usa planilhas em metade das escolas. Queremos centralizar matrícula e frequência antes do Censo de 2027.'),
+        P('p4', '2026-10-23', 'Cururupu/MA', 'Secretaria de Saúde', 'Renata Lima', 'Secretária de Saúde', 'Diagnóstico gratuito', ['Saúde', 'Gestão e Controle'], 'novo', '•••.230.661-••', 'saude@[municipio].gov.br', '(98) 9••••-••03', 'Prazo de prestação de contas', '30 a 100 mil', [['Plano Municipal de Saúde', 'Em elaboração'], ['RAG e RDQA', 'Com atraso']], 'O RDQA do segundo quadrimestre não foi apresentado na Câmara e o Plano Municipal de Saúde 2026–2029 ainda está em elaboração.'),
+        P('p5', '2026-10-22', 'Monteiro/PB', 'Secretaria de Educação', 'Carlos Nóbrega', 'Técnico do PAR', 'Treinamento no município', ['Consultoria'], 'fechado', '•••.775.304-••', 'par@[municipio].gov.br', '(83) 9••••-••58', 'Organizar e capacitar a equipe', '30 a 100 mil', [['PAR Ciclo 5', 'Concluído'], ['Alunos matriculados', '6.200']], 'Queremos uma turma fechada para 25 técnicos sobre SIGPC Ágil e Fundeb 2027.'),
+        P('p6', '2026-10-21', 'Igarassu/PE', 'Prefeitura Municipal', 'Ana Paula Souto', 'Secretária de Planejamento', 'Diagnóstico gratuito', ['Gestão e Controle', 'Consultoria', 'Saúde'], 'contato', '•••.418.239-••', 'planejamento@[municipio].gov.br', '(81) 9••••-••91', 'Obra parada', '100 a 500 mil', [['Obra ou convênio paralisado', 'Sim, 3 ou mais'], ['Diagnóstico do PAR', 'Não sei']], 'Três convênios com obra parada e saldo em conta. Precisamos entender se ainda dá para reprogramar ou se teremos de devolver.')
       ],
       cursos: [
-        { id: 'gem', nome: 'Gestão Educacional Municipal 2026', cor: '#EA6036', carga: '8 horas', preco: 500, status: 'Inscrições abertas', site: true, publico: 'Secretários, técnicos do PAR e do SIGPC, financeiro e conselheiros',
+        { id: 'gem', nome: 'Gestão Educacional Municipal 2026', cor: '#D9A029', carga: '8 horas', preco: 500, status: 'Inscrições abertas', site: true, publico: 'Secretários, técnicos do PAR e do SIGPC, financeiro e conselheiros',
           turmas: [
             { id: 'gem-belem', cidade: 'Belém', uf: 'PA', data: '2026-10-29', local: 'Auditório central', vagas: 40, base: 22, status: 'Confirmada' },
             { id: 'gem-salin', cidade: 'Salinópolis', uf: 'PA', data: '2026-11-06', local: 'Centro de convenções', vagas: 40, base: 17, status: 'Em formação' }
@@ -162,12 +162,12 @@
         { id: uid(), src: '../assets/img/p6.jpg', leg: 'Grupo ao final do treinamento', album: 'Jornada Pedagógica', capa: false }
       ],
       secoes: [
-        ['Início', 'Abertura com os quatro módulos', 'Destaque'], ['Início', 'O problema e os números do setor', 'Texto'], ['Início', 'Quatro módulos, um grupo', 'Cartões'], ['Início', 'Sete etapas até a conta fechar', 'Linha do tempo'],
-        ['Início', 'O que já foi feito', 'Números'], ['Início', 'Projetos contemplados', 'Painel'], ['Início', 'Quem está por trás', 'Vídeo'], ['Início', 'Encontros técnicos', 'Chamada'],
-        ['Início', 'Para ficar em dia', 'Blog'], ['Início', 'Depoimentos', 'Carrossel'], ['Início', 'Como contratar', 'Diagrama'], ['Início', 'Pré-diagnóstico', 'Formulário'],
-        ['Módulos', 'Gestão', 'Módulo'], ['Módulos', 'Educação', 'Módulo'], ['Módulos', 'Saúde', 'Módulo'], ['Módulos', 'Escola', 'Módulo'], ['Módulos', 'Comparativo', 'Tabela'],
-        ['Treinamentos', 'Próximo encontro', 'Destaque'], ['Treinamentos', 'Como funciona a inscrição', 'Passos'], ['Treinamentos', 'Encontros e turmas', 'Cartões'], ['Treinamentos', 'Fotos dos encontros', 'Galeria'], ['Treinamentos', 'Pré-inscrição', 'Formulário'],
-        ['Sobre nós', 'O que fazemos', 'Texto'], ['Sobre nós', 'O que muda para quem trabalha com a gente', 'Antes e depois'], ['Sobre nós', 'Equipe', 'Cartões'], ['Sobre nós', 'Como trabalhamos', 'Texto']
+        ['Início', 'Abertura: Sua prefeitura está com dificuldade para conseguir recursos?', 'Destaque'], ['Início', 'Números do grupo', 'Números'], ['Início', 'Áreas de atuação', 'Cartões'], ['Início', 'Vídeo institucional', 'Vídeo'],
+        ['Início', 'Projetos contemplados', 'Painel'], ['Início', 'Diretor', 'Perfil'], ['Início', 'Próximos encontros técnicos', 'Chamada'], ['Início', 'Depoimentos', 'Carrossel'],
+        ['Início', 'Blog', 'Blog'], ['Início', 'Como contratar', 'Passos'], ['Início', 'Fale com a nossa equipe', 'Formulário'],
+        ['Áreas de atuação', 'Consultoria, Assessoria e Treinamentos', 'Área'], ['Áreas de atuação', 'SIGEMEC Gestão e Controle', 'Área'], ['Áreas de atuação', 'SIGEMEC Gestão Escolar', 'Área'], ['Áreas de atuação', 'SIGEMEC Saúde', 'Área'],
+        ['Eventos e cursos', 'Próximos eventos', 'Cartões'], ['Eventos e cursos', 'Como funciona a inscrição', 'Passos'], ['Eventos e cursos', 'Galeria', 'Galeria'], ['Eventos e cursos', 'Inscrição', 'Formulário'],
+        ['Quem somos', 'Nossa história', 'Texto'], ['Quem somos', 'Objetivos', 'Cartões'], ['Quem somos', 'Diretor', 'Perfil'], ['Quem somos', 'Equipe', 'Cartões'], ['Quem somos', 'Valores', 'Texto']
       ].map(([pagina, titulo, tipo]) => ({ id: uid(), pagina, titulo, tipo, visivel: true })),
       numeros: [['Recursos em projetos aprovados e pagos (destaque)', '+R$ 2 bi'], ['Municípios atendidos', '250'], ['Estados', '17'], ['Técnicos capacitados', '3000'], ['Anos de atuação', '10'], ['Projetos de Educação Infantil pagos', '18']].map(([label, value]) => ({ id: uid(), label, value })),
       projetos: [['Aquiraz/CE', 2254852.64], ['Monteiro/PB', 1624843.94], ['Anajatuba/MA', 1617679.18], ['Nova Mamoré/RO', 1380194.14], ['Cacoal/RO', 1310815.36], ['Pimenta Bueno/RO', 1304173], ['Novo Oriente/CE', 982243.04], ['Cururupu/MA', 950288.8], ['Novo Horizonte do Oeste/RO', 372596.09], ['Cujubim/RO', 265054.59], ['Bernardino Batista/PB', 214648.8], ['Poço de José de Moura/PB', 152390.25], ['Palmeira/PR', 1479877.51], ['Lajeado/RS', 801915.99], ['Chapadão do Céu/GO', 640039.04], ['Barro/CE', 523336.19], ['Corumbiara/RO', 502757.01], ['Uauá/BA', 465636.44]].sort((a, b) => b[1] - a[1]).map(([mun, valor]) => ({ id: uid(), mun, valor, pago: '2024-04-01', prog: 'Projeto de Educação Infantil' })),
@@ -205,12 +205,17 @@
   /* ---------- formulários em janela ---------- */
   const modal = $('#modal');
   modal.addEventListener('click', e => { if (e.target === modal) modal.close(); });
+  /* janela aberta entra no histórico: o "voltar" do navegador fecha a janela em vez de sair da tela */
+  modal.addEventListener('close', () => {
+    if (modal.dataset.pop) { delete modal.dataset.pop; return; }
+    if (history.state && history.state.modal) { popIgnore++; history.back(); }
+  });
   function openModal(title, eyebrow, body) {
     const box = $('#mBox'); box.replaceChildren(
       h('div', { class: 'm-head' }, h('div', null, eyebrow ? h('span', { class: 'mono', text: eyebrow }) : null, h('h2', { id: 'mTitle', text: title })),
         h('button', { type: 'button', class: 'ibtn', 'aria-label': 'Fechar', onclick: () => modal.close() }, ic('x'))),
       body);
-    if (!modal.open) modal.showModal();
+    if (!modal.open) { modal.showModal(); history.pushState(Object.assign({}, history.state, { modal: 1 }), '', location.href); }
     const first = box.querySelector('input:not([type=hidden]),select,textarea'); if (first) setTimeout(() => first.focus(), 60);
   }
   /* fields: {name,label,type,options,required,full,placeholder,min,max,help} */
@@ -298,7 +303,7 @@
   /* ---------- peças de tela ---------- */
   const btn = (label, icon, onclick, cls = '') => h('button', { type: 'button', class: 'btn ' + cls, onclick }, icon ? ic(icon) : null, label);
   const addBtn = (label, onclick, cls = 'btn-gold') => btn(label, 'plus', onclick, 'btn-add ' + cls);
-  const head = (eyebrow, title, sub, acts) => h('header', { class: 'hd' }, h('div', null, h('span', { class: 'mono', text: eyebrow }), h('h1', { text: title }), sub ? h('p', { text: sub }) : null),
+  const head = (eyebrow, title, sub, acts) => h('header', { class: 'hd' }, h('div', null, backBtn(), h('span', { class: 'mono', text: eyebrow }), h('h1', { text: title }), sub ? h('p', { text: sub }) : null),
     h('div', { class: 'acts' }, h('span', { class: 'tag-demo', text: 'Prévia · dados fictícios' }), acts));
   const card = (title, note, acts, ...body) => h('section', { class: 'card' }, h('div', { class: 'c-head' }, h('div', null, h('h2', { text: title }), note ? h('p', { class: 'note', text: note }) : null), acts ? h('div', { class: 'acts' }, acts) : null), body);
   const chip = (label, on, onclick, count, color) => h('button', { type: 'button', class: 'chip', 'aria-pressed': String(!!on), onclick, style: color ? `--c:${color}` : null }, color ? h('i') : null, label, count != null ? h('small', { text: String(count) }) : null);
@@ -315,24 +320,40 @@
 
   /* ---------- navegação ---------- */
   const NAV = [
-    ['visao', 'Visão geral', 'home', '#E0A729'], ['pedidos', 'Pedidos', 'inbox', '#39A9DB'], ['inscricoes', 'Inscrições', 'users', '#EA6036'],
-    ['cursos', 'Cursos', 'book', '#40C965'], ['conteudo', 'Conteúdo do site', 'layers', '#C3CDDA'], ['relatorios', 'Relatórios', 'file', '#93A3B8']
+    ['visao', 'Visão geral', 'home', '#D9A029'], ['pedidos', 'Pedidos', 'inbox', '#39A9DB'], ['inscricoes', 'Inscrições', 'users', '#5B7DB1'],
+    ['cursos', 'Cursos', 'book', '#40C965'], ['conteudo', 'Conteúdo do site', 'layers', '#C3CDDA'], ['editor', 'Editor do site', 'code', '#D9A029'], ['relatorios', 'Relatórios', 'file', '#93A3B8']
   ];
   function drawNav() {
-    const badge = { pedidos: db.pedidos.filter(p => p.status === 'novo').length + ' novos', inscricoes: String(db.pessoas.length), cursos: String(db.cursos.length), conteudo: db.pub.pend ? String(db.pub.pend) : '' };
+    const badge = { pedidos: db.pedidos.filter(p => p.status === 'novo').length + ' novos', inscricoes: String(db.pessoas.length), cursos: String(db.cursos.length), conteudo: db.pub.pend ? String(db.pub.pend) : '', editor: changed().length ? String(changed().length) : '' };
     $('#sNav').replaceChildren(...NAV.map(([id, label, icon, c]) => h('button', { type: 'button', style: `--c:${c}`, 'aria-current': S.view === id ? 'page' : null, onclick: () => go(id) }, ic(icon), label, badge[id] ? h('em', { text: badge[id] }) : null)));
   }
-  function go(view, extra) {
+  /* cada tela entra no histórico do navegador: o botão "voltar" volta para a tela anterior do painel */
+  const VIEWS = () => NAV.map(n => n[0]);
+  let navDepth = 0, popIgnore = 0;
+  function go(view, extra, fromHistory) {
+    const prev = S.view;
     Object.assign(S, { view }, extra || {});
     $('#app').classList.remove('nav-open'); $('#navBtn').setAttribute('aria-expanded', 'false');
+    if (!fromHistory && (prev !== view || (extra && extra.edFile))) { history.pushState({ v: view, f: view === 'editor' ? ED.path : undefined }, '', '#/' + view); navDepth++; }
     render(true); scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
   }
+  addEventListener('popstate', e => {
+    if (popIgnore) { popIgnore--; return; }
+    if (modal.open) { modal.dataset.pop = '1'; modal.close(); return; }
+    if ($('#app').hidden) return;
+    navDepth = Math.max(0, navDepth - 1);
+    const v = (location.hash.match(/^#\/([\w-]+)/) || [])[1];
+    const st = e.state || {};
+    if (st.f) ED.path = st.f;
+    go(VIEWS().includes(v) ? v : 'visao', null, true);
+  });
+  const backBtn = () => S.view === 'visao' ? null : h('button', { type: 'button', class: 'btn btn-sm btn-back', onclick: () => { if (navDepth > 0) history.back(); else go('visao'); } }, ic('back'), 'Voltar');
 
   let lastView = '';
   function render(fresh) {
     drawNav();
     const act = document.activeElement, keepId = act && act.id, sel = act && act.selectionStart;
-    const V = { visao, pedidos, inscricoes, cursos, conteudo, relatorios }[S.view];
+    const V = { visao, pedidos, inscricoes, cursos, conteudo, editor, relatorios }[S.view] || visao;
     const box = h('div', { class: fresh || lastView !== S.view ? 'v-in' : '' }, V());
     lastView = S.view;
     $('#main').replaceChildren(box);
@@ -345,10 +366,10 @@
   function quickAdd() {
     const opts = [
       ['Pedido', 'Registrar pedido recebido por telefone ou e-mail', 'inbox', '#39A9DB', addPedido],
-      ['Participante', 'Inscrever alguém numa turma', 'users', '#EA6036', () => addPessoa()],
+      ['Participante', 'Inscrever alguém numa turma', 'users', '#5B7DB1', () => addPessoa()],
       ['Curso', 'Criar um novo curso ou encontro', 'book', '#40C965', addCurso],
-      ['Evento', 'Divulgar um evento no site', 'calendar', '#E0A729', addEvento],
-      ['Fotos de evento', 'Enviar fotos para a galeria', 'image', '#EA6036', addFotos],
+      ['Evento', 'Divulgar um evento no site', 'calendar', '#D9A029', addEvento],
+      ['Fotos de evento', 'Enviar fotos para a galeria', 'image', '#5B7DB1', addFotos],
       ['Seção do site', 'Criar um novo bloco numa página', 'layers', '#39A9DB', addSecao]
     ];
     openModal('O que você quer adicionar?', 'Adicionar', h('div', { class: 'qadd' }, opts.map(([t, d, i, c, fn]) => h('button', { type: 'button', style: `--c:${c}`, onclick: () => { modal.close(); setTimeout(fn, 80); } }, ic(i), t, h('small', { text: d })))));
@@ -359,7 +380,7 @@
     const K = { '7d': [9, 17, 11500, 94], '30d': [38, 64, 41500, 92], ano: [312, 486, 318000, 89] }[S.period];
     const extraP = Math.max(0, db.pedidos.length - 6), extraI = Math.max(0, db.pessoas.length - 12);
     const prev = allTurmas().reduce((s, t) => s + inscritos(t) * t.curso.preco, 0);
-    const mods = { 'Educação': 12, 'Gestão': 10, 'Escola': 8, 'Saúde': 4 }; db.pedidos.forEach(p => p.mods.forEach(m => { mods[m] = (mods[m] || 0) + 1; }));
+    const mods = { 'Consultoria': 12, 'Gestão e Controle': 10, 'Gestão Escolar': 8, 'Saúde': 4 }; db.pedidos.forEach(p => p.mods.forEach(m => { mods[m] = (mods[m] || 0) + 1; }));
     const mrows = Object.entries(mods).sort((a, b) => b[1] - a[1]); const mmax = mrows[0][1];
     const wk = [3, 5, 4, 6, 4, 7, 5, 4 + extraP], wmax = Math.max(...wk);
     const ufs = { 'Ceará': 9, 'Pará': 7, 'Rio Grande do Sul': 6, 'Maranhão': 5, 'Paraíba': 4, 'Pernambuco': 4 };
@@ -368,13 +389,13 @@
       h('div', { class: 'stack' },
         h('div', { class: 'chips' }, [['7d', '7 dias'], ['30d', '30 dias'], ['ano', '2026']].map(([id, l]) => chip(l, S.period === id, () => { S.period = id; render(); }))),
         h('div', { class: 'grid g4' },
-          kpi('Pedidos de pré-diagnóstico', String(K[0] + extraP), '+12% sobre o período anterior', '#39A9DB', { to: K[0] + extraP }),
-          kpi('Inscrições em encontros', String(K[1] + extraI), '+8% sobre o período anterior', '#EA6036', { to: K[1] + extraI }),
+          kpi('Pedidos de diagnóstico e orçamento', String(K[0] + extraP), '+12% sobre o período anterior', '#39A9DB', { to: K[0] + extraP }),
+          kpi('Inscrições em encontros', String(K[1] + extraI), '+8% sobre o período anterior', '#5B7DB1', { to: K[1] + extraI }),
           kpi('Valor previsto das turmas abertas', brl(prev), 'Antes de isenções de clientes', '#40C965', { to: prev, pre: 'R$ ' }),
-          kpi('Respondidos em até 1 dia útil', K[3] + '%', 'Meta: 90%', '#E0A729', { to: K[3], suf: '%' })),
+          kpi('Respondidos em até 1 dia útil', K[3] + '%', 'Meta: 90%', '#D9A029', { to: K[3], suf: '%' })),
         h('div', { class: 'grid g2' },
-          card('Pedidos por módulo', 'Um pedido pode marcar mais de um módulo.', null, bars(mrows.map(([m, v]) => [m, v, MOD[m]]), mmax)),
-          card('Pedidos por semana', 'Pré-diagnósticos e propostas recebidos pelo site.', null,
+          card('Pedidos por área de atuação', 'Um pedido pode marcar mais de uma área.', null, bars(mrows.map(([m, v]) => [m, v, MOD[m]]), mmax)),
+          card('Pedidos por semana', 'Diagnósticos, orçamentos e mensagens recebidos pelo site.', null,
             h('div', { class: 'cols' }, wk.map((v, i) => h('div', { title: `Semana ${i + 36}: ${v} pedidos` }, i === wk.length - 1 ? h('b', { text: String(v) }) : null, h('i', { style: `--h:${v / wmax * 100}%` })))),
             h('div', { class: 'cols-l' }, wk.map((v, i) => h('span', { text: 'S' + (i + 36) })))),
           card('Ocupação das turmas', null, [btn('Ver cursos', 'book', () => go('cursos'), 'btn-sm')], h('div', { class: 'stack' }, allTurmas().map(t => {
@@ -392,7 +413,7 @@
   function pedidoTable(list, compact) {
     if (!list.length) return empty('Nenhum pedido nesta situação.');
     return h('div', { class: 'tbl-wrap' }, h('table', { class: 'tbl' },
-      h('thead', null, h('tr', null, ['Data', 'Município', 'Responsável', 'Módulos', 'Situação'].map(t => h('th', { text: t })))),
+      h('thead', null, h('tr', null, ['Data', 'Município', 'Responsável', 'Áreas', 'Situação'].map(t => h('th', { text: t })))),
       h('tbody', null, list.map(p => h('tr', { class: 'click' + (!compact && p.id === S.pSel ? ' sel' : '') + (p.fresh ? ' row-in' : ''), tabindex: 0, onclick: () => { S.pSel = p.id; if (compact) go('pedidos', { pStatus: 'todos' }); else render(); }, onkeydown: e => { if (e.key === 'Enter') e.currentTarget.click(); } },
         h('td', { class: 'mono-c', text: dBR(p.data).slice(0, 5) }), h('td', null, h('b', { text: p.mun }), h('small', { text: p.orgao })), h('td', null, p.resp, h('small', { text: p.tipo })),
         h('td', null, h('div', { class: 'mods' }, p.mods.map(m => h('span', { class: 'mod', style: `--c:${MOD[m]}` }, h('i'), m)))), h('td', null, h('span', { class: 'pill p-' + p.status, text: ST[p.status] }))))))
@@ -404,7 +425,7 @@
     const list = db.pedidos.filter(p => (S.pStatus === 'todos' || p.status === S.pStatus) && (!q || norm([p.mun, p.resp, p.orgao, p.email].join(' ')).includes(q)));
     const s = db.pedidos.find(p => p.id === S.pSel);
     return [
-      head('Painel de controle', 'Pedidos', 'Pré-diagnósticos, propostas e treinamentos in company enviados pelo site.', [btn('Exportar planilha', 'download', () => exportArea(['pedidos'])), addBtn('Novo pedido', addPedido)]),
+      head('Painel de controle', 'Pedidos', 'Diagnósticos, orçamentos, treinamentos e mensagens enviados pelo site.', [btn('Exportar planilha', 'download', () => exportArea(['pedidos'])), addBtn('Novo pedido', addPedido)]),
       h('div', { class: 'toolbar' }, [['todos', 'Todos'], ...Object.entries(ST)].map(([id, l]) => chip(l, S.pStatus === id, () => { S.pStatus = id; render(); }, counts[id])),
         h('label', { class: 'search' }, ic('search'), h('span', { class: 'sr', text: 'Buscar pedido' }), h('input', { id: 'qPed', type: 'search', placeholder: 'Município, responsável ou e-mail', value: S.q, oninput: e => { S.q = e.target.value; render(); } }))),
       h('div', { class: 'split' }, h('section', { class: 'card', style: 'padding:8px' }, pedidoTable(list)), s ? detPedido(s) : h('aside', { class: 'det' }, h('p', { style: 'margin:0;color:var(--mute-d)', text: 'Selecione um pedido para ver as respostas do formulário.' })))
@@ -415,7 +436,7 @@
       h('div', null, h('span', { class: 'mono', text: `${s.tipo} · recebido em ${dBR(s.data)}` }), h('h2', { text: s.mun }), h('span', { style: 'color:var(--mute-d);font-size:14px', text: s.orgao })),
       h('div', { class: 'stack', style: 'gap:8px' }, h('span', { class: 'lbl', text: 'Situação' }), h('div', { class: 'st-opts' }, Object.entries(ST).map(([k, l]) => h('button', { type: 'button', class: s.status === k ? 'p-' + k : '', 'aria-pressed': String(s.status === k), text: l, onclick: () => { s.status = k; s.notas.unshift({ t: nowBR(), txt: 'Situação alterada para ' + l }); save(); render(); toast('Situação atualizada: ' + l); } })))),
       h('dl', { class: 'facts' }, [['Responsável', s.resp], ['Cargo', s.cargo], ['CPF', s.cpf], ['CNPJ do órgão', s.cnpj], ['E-mail', s.email], ['WhatsApp', s.tel], ['Urgência', s.urg], ['População', s.pop]].map(([k, v]) => h('div', null, h('dt', { text: k }), h('dd', { text: v || '—' })))),
-      s.answers && s.answers.length ? h('div', null, h('span', { class: 'lbl', text: 'Respostas por módulo' }), s.answers.map(([k, v]) => h('div', { class: 'ans' }, h('span', { text: k }), h('b', { text: v })))) : null,
+      s.answers && s.answers.length ? h('div', null, h('span', { class: 'lbl', text: 'Respostas por área' }), s.answers.map(([k, v]) => h('div', { class: 'ans' }, h('span', { text: k }), h('b', { text: v })))) : null,
       h('div', { class: 'stack', style: 'gap:8px' }, h('span', { class: 'lbl', text: 'Situação descrita pelo município' }), h('p', { class: 'desc', text: s.desc || '—' })),
       h('div', { class: 'stack', style: 'gap:8px' }, h('div', { style: 'display:flex;justify-content:space-between;align-items:center' }, h('span', { class: 'lbl', text: 'Anotações da equipe' }),
         h('button', { type: 'button', class: 'btn btn-sm btn-add', style: 'background:transparent;color:var(--paper);border-color:rgba(237,240,244,.25)', onclick: () => openForm({ title: 'Nova anotação', eyebrow: s.mun, fields: [{ name: 'txt', label: 'Anotação', type: 'textarea', required: true, placeholder: 'Ex.: Liguei para a secretária, retorno na sexta.' }], onSubmit: d => { s.notas.unshift({ t: nowBR(), txt: d.txt }); save(); render(); toast('Anotação adicionada.'); } }) }, ic('plus'), 'Adicionar')),
@@ -428,11 +449,11 @@
     openForm({ title: 'Novo pedido', eyebrow: 'Pedidos', fields: [
       { name: 'mun', label: 'Município', required: true, placeholder: 'Ex.: Tianguá' }, { name: 'uf', label: 'UF', type: 'select', options: UFS, value: 'CE' },
       { name: 'orgao', label: 'Órgão', type: 'select', options: ['Prefeitura Municipal', 'Secretaria de Educação', 'Secretaria de Saúde', 'Controladoria', 'Outro'] },
-      { name: 'tipo', label: 'Tipo de pedido', type: 'select', options: ['Pré-diagnóstico', 'Proposta e ata', 'Treinamento in company'] },
+      { name: 'tipo', label: 'Tipo de pedido', type: 'select', options: ['Diagnóstico gratuito', 'Orçamento e ata', 'Treinamento no município', 'Dúvidas e suporte'] },
       { name: 'resp', label: 'Responsável', required: true }, { name: 'cargo', label: 'Cargo' },
       { name: 'cpf', label: 'CPF do responsável', type: 'cpf', placeholder: '000.000.000-00' }, { name: 'tel', label: 'WhatsApp', type: 'tel', placeholder: '(00) 00000-0000' },
       { name: 'email', label: 'E-mail', type: 'email', full: true },
-      { name: 'mods', label: 'Módulos de interesse', type: 'checks', options: Object.keys(MOD), required: true },
+      { name: 'mods', label: 'Áreas de interesse', type: 'checks', options: Object.keys(MOD), required: true },
       { name: 'urg', label: 'Urgência', type: 'select', options: ['Recurso bloqueado por pendência', 'Prazo de prestação de contas', 'Obra parada', 'Captar novos recursos', 'Organizar e capacitar a equipe'] },
       { name: 'pop', label: 'População', type: 'select', options: ['Até 10 mil', '10 a 30 mil', '30 a 100 mil', '100 a 500 mil', 'Mais de 500 mil'] },
       { name: 'desc', label: 'Situação descrita pelo município', type: 'textarea' }
@@ -451,7 +472,7 @@
   function proposta(s) {
     if (!temEmail(s)) return;
     composeMail([{ to: [s.email], cc: ['comercial@sigemec.com.br'], bcc: [], label: s.mun, subject: `Proposta SIGEMEC · ${s.mods.join(', ')} · ${s.mun}`,
-      body: `Olá, ${primeiro(s.resp)},\n\nSegue em anexo a proposta do SIGEMEC para ${s.mun}, com o escopo dos módulos ${s.mods.join(', ')}.\n\nTambém vão anexos a ata de registro de preço vigente, o termo de referência e a pesquisa de preços, para instruir o processo de adesão.\n\nFicamos à disposição para apresentar a proposta à equipe.` + ASSINATURA,
+      body: `Olá, ${primeiro(s.resp)},\n\nSegue em anexo a proposta do SIGEMEC para ${s.mun}, com o escopo das áreas ${s.mods.join(', ')}.\n\nTambém vão anexos a ata de registro de preço vigente, o termo de referência e a pesquisa de preços, para instruir o processo de adesão.\n\nFicamos à disposição para apresentar a proposta à equipe.` + ASSINATURA,
       onSent: () => { s.notas.unshift({ t: nowBR(), txt: 'Proposta enviada por e-mail para ' + s.email }); s.status = 'proposta'; } }], { tipo: 'Proposta', anexo: 'a proposta, a ata e o termo de referência' });
   }
 
@@ -465,7 +486,7 @@
       head('Painel de controle', 'Inscrições', 'Pré-inscrições dos encontros técnicos, com participantes e pagamento.', [btn('Exportar planilha', 'download', () => exportArea(['inscricoes', 'financeiro'])), btn('Enviar boletos', 'mail', () => openBoleto(t.id), 'btn-ink'), addBtn('Adicionar participante', () => addPessoa(t.id))]),
       h('div', { class: 'stack' },
         h('div', { class: 'chips' }, allTurmas().map(x => chip(turmaLabel(x), x.id === t.id, () => { S.turma = x.id; render(); }, null, x.curso.cor))),
-        h('div', { class: 'grid g4' }, kpi('Inscritos', `${n} / ${t.vagas}`, `${Math.round(n / t.vagas * 100)}% das vagas`, t.curso.cor), kpi('Valor previsto', brl(n * t.curso.preco), brl(t.curso.preco) + ' por participante', '#40C965'), kpi('Pagos nesta lista', String(pagos), null, '#E0A729'), kpi('Situação da turma', t.status, t.curso.nome, '#39A9DB')),
+        h('div', { class: 'grid g4' }, kpi('Inscritos', `${n} / ${t.vagas}`, `${Math.round(n / t.vagas * 100)}% das vagas`, t.curso.cor), kpi('Valor previsto', brl(n * t.curso.preco), brl(t.curso.preco) + ' por participante', '#40C965'), kpi('Pagos nesta lista', String(pagos), null, '#D9A029'), kpi('Situação da turma', t.status, t.curso.nome, '#39A9DB')),
         h('section', { class: 'card', style: 'padding:8px' },
           h('div', { class: 'toolbar', style: 'padding:8px 8px 0' }, h('span', { style: 'font-size:13px;color:var(--body)', text: 'Clique na situação para avançar: pré-inscrito → validado → pago → isento.' }),
             h('label', { class: 'search' }, ic('search'), h('span', { class: 'sr', text: 'Buscar participante' }), h('input', { id: 'qIns', type: 'search', placeholder: 'Nome, função ou município', value: S.iq, oninput: e => { S.iq = e.target.value; render(); } }))),
@@ -525,7 +546,7 @@
     const sess = c.dias.reduce((s, d) => s + d.sessoes.length, 0);
     return h('div', { class: 'stack' },
       h('div', { class: 'grid g4' }, kpi('Inscritos', `${n} / ${v || 0}`, v ? Math.round(n / v * 100) + '% das vagas' : 'Sem turmas', c.cor), kpi('Receita prevista', brl(n * c.preco), 'Antes de isenções', '#40C965', { to: n * c.preco, pre: 'R$ ' }),
-        kpi('Programação', `${c.dias.length} ${c.dias.length === 1 ? 'dia' : 'dias'}`, `${sess} sessões · ${c.palestrantes.length} palestrantes`, '#39A9DB'), kpi('Certificados emitidos', String(ps.filter(p => p.cert).length), `${ps.length} participantes na lista`, '#E0A729')),
+        kpi('Programação', `${c.dias.length} ${c.dias.length === 1 ? 'dia' : 'dias'}`, `${sess} sessões · ${c.palestrantes.length} palestrantes`, '#39A9DB'), kpi('Certificados emitidos', String(ps.filter(p => p.cert).length), `${ps.length} participantes na lista`, '#D9A029')),
       h('div', { class: 'grid g2' },
         card('Ocupação por turma', null, [addBtn('Turma', () => addTurma(c), 'btn-sm btn-gold')], c.turmas.length ? bars(c.turmas.map(t => [turmaLabel(t), inscritos(t), c.cor, `${inscritos(t)}/${t.vagas}`]), Math.max(...c.turmas.map(t => +t.vagas || 1))) : empty('Nenhuma turma ainda.', 'calendar')),
         card('Próximas datas', null, [addBtn('Sessão', () => addSessao(c), 'btn-sm btn-gold')], h('div', null, c.turmas.slice().sort((a, b) => a.data.localeCompare(b.data)).map(t => {
@@ -570,7 +591,7 @@
   }
   function cPal(c) {
     return card('Palestrantes', 'Aparecem nos cartões do encontro e na programação.', [addBtn('Adicionar palestrante', () => openForm({ title: 'Novo palestrante', eyebrow: c.nome, fields: [{ name: 'nome', label: 'Nome', required: true, full: true }, { name: 'cargo', label: 'Cargo ou minicurrículo', full: true }], onSubmit: d => { c.palestrantes.push({ id: uid(), ...d }); dirty(); render(); toast(d.nome + ' adicionado(a).'); } }))],
-      c.palestrantes.length ? h('div', { class: 'people' }, c.palestrantes.map((p, i) => h('div', { class: 'person', style: `--c:${[c.cor, '#E0A729', '#39A9DB', '#40C965'][i % 4]};animation-delay:${i * 60}ms` }, h('span', { class: 'av', text: ini(p.nome) }), h('div', { style: 'flex:1;min-width:0' }, h('b', { text: p.nome }), h('small', { text: p.cargo || '—' })),
+      c.palestrantes.length ? h('div', { class: 'people' }, c.palestrantes.map((p, i) => h('div', { class: 'person', style: `--c:${[c.cor, '#D9A029', '#39A9DB', '#40C965'][i % 4]};animation-delay:${i * 60}ms` }, h('span', { class: 'av', text: ini(p.nome) }), h('div', { style: 'flex:1;min-width:0' }, h('b', { text: p.nome }), h('small', { text: p.cargo || '—' })),
         h('button', { type: 'button', class: 'ibtn', 'aria-label': 'Remover ' + p.nome, onclick: () => { c.palestrantes = c.palestrantes.filter(x => x !== p); dirty(); render(); } }, ic('trash'))))) : empty('Nenhum palestrante.', 'mic'));
   }
   function cPres(c) {
@@ -628,7 +649,7 @@
     const pago = cnt('Pago') * c.preco, val = cnt('Validado') * c.preco, pre = cnt('Pré-inscrito') * c.preco, ise = cnt('Isento');
     const tot = Math.max(1, pago + val + pre);
     return h('div', { class: 'stack' },
-      h('div', { class: 'grid g4' }, kpi('Recebido', brl(pago), cnt('Pago') + ' pagamentos', '#40C965', { to: pago, pre: 'R$ ' }), kpi('A receber (validados)', brl(val), 'Boleto enviado', '#E0A729'), kpi('Em pré-inscrição', brl(pre), 'Aguardando validação', '#39A9DB'), kpi('Isentos', String(ise), 'Clientes com contrato', '#EA6036')),
+      h('div', { class: 'grid g4' }, kpi('Recebido', brl(pago), cnt('Pago') + ' pagamentos', '#40C965', { to: pago, pre: 'R$ ' }), kpi('A receber (validados)', brl(val), 'Boleto enviado', '#D9A029'), kpi('Em pré-inscrição', brl(pre), 'Aguardando validação', '#39A9DB'), kpi('Isentos', String(ise), 'Clientes com contrato', '#5B7DB1')),
       card('Composição da receita', 'Somente os participantes cadastrados no painel.', [c.turmas.length ? btn('Cobrar pendentes', 'mail', () => openBoleto(c.turmas[0].id), 'btn-sm') : null, btn('Relatório', 'download', () => { S.rf['fin-turma'] = { curso: c.id }; runReport(REPORTS.find(r => r.id === 'fin-turma')); }, 'btn-sm'), addBtn('Registrar pagamento', () => {
         const pend = ps.filter(p => p.status !== 'Pago' && p.status !== 'Isento');
         if (!pend.length) { toast('Não há pagamentos pendentes neste curso.'); return; }
@@ -639,7 +660,7 @@
       card('Por turma', null, null, h('div', { class: 'tbl-wrap' }, h('table', { class: 'tbl' }, h('thead', null, h('tr', null, ['Turma', 'Inscritos', 'Pagos', 'Previsto', 'Recebido'].map(x => h('th', { text: x })))),
         h('tbody', null, c.turmas.map(t => { const tp = db.pessoas.filter(p => p.turma === t.id); return h('tr', null, h('td', null, h('b', { text: turmaLabel(t) })), h('td', { class: 'num', text: String(inscritos(t)) }), h('td', { class: 'num', text: String(tp.filter(p => p.status === 'Pago').length) }), h('td', { class: 'num', text: brl(inscritos(t) * c.preco) }), h('td', { class: 'num', text: brl(tp.filter(p => p.status === 'Pago').length * c.preco) })); }))))));
   }
-  const CORES = [['#EA6036', 'Laranja (Educação)'], ['#39A9DB', 'Azul (Saúde)'], ['#40C965', 'Verde (Escola)'], ['#E0A729', 'Ouro (Gestão)']];
+  const CORES = [['#D9A029', 'Dourado (Consultoria)'], ['#399FD1', 'Azul (Saúde)'], ['#40C065', 'Verde (Gestão Escolar)'], ['#3E5C8A', 'Azul-marinho (Gestão e Controle)']];
   const cursoFields = [
     { name: 'nome', label: 'Nome do curso', required: true, full: true }, { name: 'carga', label: 'Carga horária', placeholder: 'Ex.: 16 horas', required: true },
     { name: 'preco', label: 'Valor por participante (R$)', type: 'money', required: true, placeholder: '500,00' }, { name: 'cor', label: 'Cor', type: 'select', options: CORES },
@@ -699,7 +720,7 @@
     return card('Eventos', 'Encontros, jornadas e lives divulgados no site. Rascunhos ficam ocultos até serem publicados.', [addBtn('Adicionar evento', addEvento, 'btn-sm btn-gold')],
       list.length ? h('div', { class: 'grid g3' }, list.map((e, i) => {
         const [, m, d] = e.data.split('-'); const c = db.cursos.find(x => x.id === e.curso);
-        return h('article', { class: 'ev', style: `--c:${c ? c.cor : '#E0A729'};animation-delay:${i * 50}ms` }, h('div', { class: 'd' }, h('div', { class: 'cal' }, h('span', { text: MESES[+m - 1] }), h('b', { text: d })), h('div', null, h('h3', { text: e.titulo }), h('div', { style: 'font-size:13px;color:var(--body);display:flex;align-items:center;gap:4px' }, ic('pin'), e.cidade))),
+        return h('article', { class: 'ev', style: `--c:${c ? c.cor : '#D9A029'};animation-delay:${i * 50}ms` }, h('div', { class: 'd' }, h('div', { class: 'cal' }, h('span', { text: MESES[+m - 1] }), h('b', { text: d })), h('div', null, h('h3', { text: e.titulo }), h('div', { style: 'font-size:13px;color:var(--body);display:flex;align-items:center;gap:4px' }, ic('pin'), e.cidade))),
           h('p', { text: e.desc }), h('div', { class: 'row' }, sw(e.status === 'Publicado' ? 'Publicado' : 'Rascunho', e.status === 'Publicado', v => { e.status = v ? 'Publicado' : 'Rascunho'; dirty(); render(); toast(v ? 'Evento publicado.' : 'Evento movido para rascunho.'); }),
             h('div', { class: 'acts' }, h('button', { type: 'button', class: 'ibtn', 'aria-label': 'Editar evento', onclick: () => addEvento(e) }, ic('edit')), h('button', { type: 'button', class: 'ibtn', 'aria-label': 'Remover evento', onclick: () => confirmBox(`Remover o evento "${e.titulo}"?`, () => { db.eventos = db.eventos.filter(x => x !== e); dirty(); render(); }) }, ic('trash')))));
       })) : empty('Nenhum evento.', 'calendar'));
@@ -760,10 +781,10 @@
   }
   function addSecao() {
     openForm({ title: 'Nova seção', eyebrow: 'Conteúdo · Seções', fields: [
-      { name: 'pagina', label: 'Página', type: 'select', options: ['Início', 'Módulos', 'Treinamentos', 'Sobre nós', 'Blog'], value: S.secPage },
+      { name: 'pagina', label: 'Página', type: 'select', options: ['Início', 'Áreas de atuação', 'Eventos e cursos', 'Quem somos', 'Blog'], value: S.secPage },
       { name: 'tipo', label: 'Tipo de bloco', type: 'select', options: ['Texto', 'Destaque', 'Cartões', 'Galeria', 'Números', 'Chamada', 'Vídeo', 'Formulário'] },
       { name: 'titulo', label: 'Título', required: true, full: true }, { name: 'texto', label: 'Texto', type: 'textarea' },
-      { name: 'cta', label: 'Botão (opcional)', placeholder: 'Ex.: Pedir pré-diagnóstico' }, { name: 'link', label: 'Link do botão', placeholder: 'Ex.: #contato' }
+      { name: 'cta', label: 'Botão (opcional)', placeholder: 'Ex.: Fale conosco' }, { name: 'link', label: 'Link do botão', placeholder: 'Ex.: #contato' }
     ], submit: 'Adicionar seção', onSubmit: d => { db.secoes.push({ id: uid(), pagina: d.pagina, titulo: d.titulo, tipo: d.tipo, texto: d.texto, visivel: true, fresh: true }); S.sub = 'secoes'; S.secPage = d.pagina; dirty(); go('conteudo'); db.secoes.forEach(x => delete x.fresh); toast('Seção criada em ' + d.pagina + '.'); } });
   }
   function tAtas() {
@@ -899,14 +920,14 @@
   const cursoOpts = () => [['', 'Todos os cursos'], ...db.cursos.map(c => [c.id, c.nome])];
   const freqDe = p => { const t = turmaById(p.turma); const n = t && t.curso.dias.length || 1; return Math.round(Object.values(p.pres || {}).filter(Boolean).length / n * 100); };
   const pessoasF = f => db.pessoas.filter(p => (!f.turma || p.turma === f.turma) && (!f.curso || (turmaById(p.turma) || {}).curso?.id === f.curso) && (!f.status || p.status === f.status));
-  const AREAS = [['pedidos', 'Pedidos', '#39A9DB'], ['inscricoes', 'Inscrições', '#EA6036'], ['financeiro', 'Financeiro', '#40C965'], ['cursos', 'Cursos', '#B07E10'], ['conteudo', 'Conteúdo do site', '#1E7FAE'], ['envios', 'E-mails', '#33404F']];
+  const AREAS = [['pedidos', 'Pedidos', '#39A9DB'], ['inscricoes', 'Inscrições', '#5B7DB1'], ['financeiro', 'Financeiro', '#40C965'], ['cursos', 'Cursos', '#B07E10'], ['conteudo', 'Conteúdo do site', '#1E7FAE'], ['envios', 'E-mails', '#33404F']];
   const REPORTS = [
-    { id: 'ped-geral', area: 'pedidos', nome: 'Pedidos recebidos', desc: 'Todos os pedidos com contato, módulos, urgência e situação.',
+    { id: 'ped-geral', area: 'pedidos', nome: 'Pedidos recebidos', desc: 'Todos os pedidos com contato, áreas, urgência e situação.',
       filtros: [{ k: 'status', label: 'Situação', opts: () => [['', 'Todas'], ...Object.entries(ST)] }],
-      cols: ['Data', 'Município', 'UF', 'Órgão', 'Tipo', 'Responsável', 'Cargo', 'E-mail', 'Módulos', 'Urgência', 'População', 'Situação', 'Última anotação'],
+      cols: ['Data', 'Município', 'UF', 'Órgão', 'Tipo', 'Responsável', 'Cargo', 'E-mail', 'Áreas', 'Urgência', 'População', 'Situação', 'Última anotação'],
       rows: f => db.pedidos.filter(p => !f.status || p.status === f.status).map(p => [dBR(p.data), p.mun.split('/')[0], p.mun.split('/')[1] || '', p.orgao, p.tipo, p.resp, p.cargo, p.email, p.mods.join(', '), p.urg, p.pop, ST[p.status], p.notas[0] ? p.notas[0].txt : '']) },
-    { id: 'ped-modulo', area: 'pedidos', nome: 'Funil por módulo', desc: 'Quantos pedidos cada módulo recebeu e quantos viraram contrato.',
-      cols: ['Módulo', 'Pedidos', 'Novos', 'Em contato', 'Proposta enviada', 'Contrato fechado', 'Taxa de fechamento'],
+    { id: 'ped-modulo', area: 'pedidos', nome: 'Funil por área de atuação', desc: 'Quantos pedidos cada área recebeu e quantos viraram contrato.',
+      cols: ['Área de atuação', 'Pedidos', 'Novos', 'Em contato', 'Proposta enviada', 'Contrato fechado', 'Taxa de fechamento'],
       rows: () => Object.keys(MOD).map(m => { const l = db.pedidos.filter(p => p.mods.includes(m)), n = s => l.filter(p => p.status === s).length; return [m, l.length, n('novo'), n('contato'), n('proposta'), n('fechado'), l.length ? Math.round(n('fechado') / l.length * 100) + '%' : '0%']; }) },
     { id: 'ped-uf', area: 'pedidos', nome: 'Pedidos por estado', desc: 'Distribuição geográfica dos pedidos.',
       cols: ['UF', 'Pedidos', 'Contratos fechados', 'Municípios'],
@@ -996,11 +1017,465 @@
       h('button', { type: 'button', style: '--c:var(--ink)', onclick: () => { modal.close(); go('relatorios'); } }, ic('file'), 'Todos os relatórios', h('small', { text: 'Abrir a central de relatórios' }))));
   }
 
+  /* =================== EDITOR DO SITE ===================
+     Abre os arquivos publicados do site, permite editar visualmente ou pelo código e guarda tudo como rascunho
+     neste navegador. "Publicar" envia os arquivos alterados para o repositório do site (GitHub) com um token
+     de acesso informado pela equipe; "Baixar pacote" gera um .zip para enviar à hospedagem. */
+  const ED_DRAFTS = 'sgm-editor-rascunhos', ED_CFG = 'sgm-editor-github', ED_PUB = 'sgm-editor-publicados', ED_LOG = 'sgm-editor-historico', ED_TOKEN = 'sgm-gh-token';
+  const ED_FALLBACK = ['index.html', 'areas-de-atuacao.html', 'eventos.html', 'blog.html', 'quem-somos.html', 'assets/site.css', 'assets/site.js', 'assets/blog.js', 'assets/fonts.css', 'robots.txt'];
+  const ED = { files: null, imgs: [], path: 'index.html', mode: 'visual', base: {}, sel: null, q: '', find: '', repl: '' };
+  const edGet = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
+  const edSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { toast('Sem espaço neste navegador para guardar o rascunho. Publique ou baixe as alterações.', true); return false; } };
+  let drafts = edGet(ED_DRAFTS, {});
+  const saveDrafts = () => edSet(ED_DRAFTS, drafts);
+  const isHtml = p => /\.html?$/i.test(p);
+  const isImg = p => /\.(png|jpe?g|webp|gif|svg)$/i.test(p);
+  const langOf = p => /\.css$/i.test(p) ? 'css' : /\.js$/i.test(p) ? 'js' : isHtml(p) ? 'html' : 'txt';
+  const edText = p => drafts[p] && drafts[p].text != null ? drafts[p].text : ED.base[p];
+  const changed = () => Object.keys(drafts);
+  const safePath = p => /^[\w][\w./-]*$/.test(p) && !p.includes('..') && !p.startsWith('painel/');
+  const edCfg = () => {
+    let token = '';
+    try { token = sessionStorage.getItem(ED_TOKEN) || localStorage.getItem(ED_TOKEN) || ''; } catch (e) {}
+    return Object.assign({ repo: 'Pedrinapl/sigemec', branch: 'main', pasta: '' }, edGet(ED_CFG, {}), { token });
+  };
+
+  async function edLoadList() {
+    if (ED.files) return;
+    try {
+      const r = await fetch('arquivos.json?t=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) throw new Error();
+      const j = await r.json();
+      ED.files = (j.arquivos || []).filter(safePath); ED.imgs = (j.imagens || []).filter(safePath);
+    } catch (e) { ED.files = ED_FALLBACK.slice(); ED.imgs = []; }
+    if (S.view === 'editor') render();
+  }
+  async function edLoad(path) {
+    if (ED.base[path] != null || ED.loading === path) return;
+    const pub = edGet(ED_PUB, {})[path];
+    if (pub && Date.now() - pub.t < 20 * 60e3) { ED.base[path] = pub.text; if (S.view === 'editor') render(); return; }
+    ED.loading = path;
+    try {
+      const r = await fetch('../' + path + '?t=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) throw new Error();
+      ED.base[path] = await r.text();
+    } catch (e) { ED.base[path] = drafts[path] ? '' : null; if (!drafts[path]) toast('Não foi possível abrir ' + path + '.', true); }
+    ED.loading = null;
+    if (S.view === 'editor') render();
+  }
+  function setDraft(path, text) {
+    if (text === ED.base[path] && !(drafts[path] && drafts[path].novo)) delete drafts[path];
+    else drafts[path] = Object.assign({}, drafts[path], { text, t: Date.now() });
+    saveDrafts(); drawNav(); edMarks();
+  }
+  /* atualiza só as marcas de "alterado" sem redesenhar o editor (não interrompe a digitação) */
+  function edMarks() {
+    $$('.ed-files [data-path]').forEach(b => b.classList.toggle('dirty', !!drafts[b.dataset.path]));
+    const st = $('#edState'); if (st) { const d = !!drafts[ED.path]; st.textContent = d ? 'Rascunho salvo neste navegador' : 'Igual ao site publicado'; st.classList.toggle('on', d); }
+    const pc = $('#edPend'); if (pc) pc.textContent = changed().length ? `${changed().length} alterado(s)` : '';
+  }
+
+  /* ---------- realce de sintaxe (o texto é escapado antes; só entram spans com classes fixas) ---------- */
+  const escH = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  function tok(s, rx, kinds) {
+    let out = '', last = 0, m; rx.lastIndex = 0;
+    while ((m = rx.exec(s))) {
+      if (m[0] === '') { rx.lastIndex++; continue; }
+      if (m.index > last) out += escH(s.slice(last, m.index));
+      let k = 1; while (k < m.length && m[k] === undefined) k++;
+      const kind = kinds[k - 1];
+      out += typeof kind === 'function' ? kind(m[0]) : kind ? `<span class="t-${kind}">${escH(m[0])}</span>` : escH(m[0]);
+      last = rx.lastIndex;
+    }
+    return out + escH(s.slice(last));
+  }
+  const hlTag = t => tok(t, /(^<\/?[\w-]*)|("[^"]*"|'[^']*')|([\w:@.-]+)(?=\s*=)|(\/?>$)/g, ['tag', 'str', 'attr', 'tag']);
+  const HL = {
+    html: s => tok(s, /(<!--[\s\S]*?-->)|(<!doctype[^>]*>)|(<[a-zA-Z\/][^>]*>)/gi, ['com', 'kw', hlTag]),
+    css: s => tok(s, /(\/\*[\s\S]*?\*\/)|("[^"\n]*"|'[^'\n]*')|([\w-]+)(?=\s*:[^;{}]*[;}])|(#[0-9a-fA-F]{3,8}\b|\b\d+(?:\.\d+)?(?:px|rem|em|%|vw|vh|dvh|s|ms|deg|fr)?\b)|(@[\w-]+)/g, ['com', 'str', 'prop', 'num', 'kw']),
+    js: s => tok(s, /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|(`(?:\\[\s\S]|[^`\\])*`|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*')|\b(const|let|var|function|return|if|else|for|while|of|in|new|try|catch|finally|throw|typeof|async|await|class|true|false|null|undefined|this|break|continue|switch|case|default)\b|\b(\d+(?:\.\d+)?)\b/g, ['com', 'str', 'kw', 'num']),
+    txt: s => escH(s)
+  };
+
+  /* ---------- tela ---------- */
+  function editor() {
+    edLoadList();
+    const T = [['paginas', 'Páginas e código', 'file'], ['imagens', 'Imagens', 'image'], ['publicar', 'Publicação', 'upload']];
+    S.edTab = S.edTab || 'paginas';
+    const n = changed().length;
+    return [
+      head('Painel de controle', 'Editor do site', 'Altere qualquer texto, imagem, link ou código do site. As alterações ficam como rascunho até você publicar.', [
+        h('span', { class: 'ed-pend', id: 'edPend', text: n ? `${n} alterado(s)` : '' }),
+        btn('Baixar pacote', 'download', () => edZip()), btn('Publicar', 'upload', () => edPublishAsk(), 'btn-gold')]),
+      tabs(T, S.edTab, id => { S.edTab = id; render(); }, 'Editor do site'),
+      ({ paginas: edPages, imagens: edImages, publicar: edPublishTab })[S.edTab]()
+    ];
+  }
+
+  function edFileList() {
+    const all = [...new Set([...(ED.files || []), ...Object.keys(drafts).filter(p => drafts[p].text != null)])];
+    const q = norm(ED.q);
+    const groups = [['Páginas', p => isHtml(p)], ['Estilos', p => /\.css$/.test(p)], ['Scripts', p => /\.js$/.test(p)], ['Outros', p => !isHtml(p) && !/\.(css|js)$/.test(p)]];
+    return h('aside', { class: 'ed-files', 'aria-label': 'Arquivos do site' },
+      h('label', { class: 'search' }, ic('search'), h('span', { class: 'sr', text: 'Buscar arquivo' }), h('input', { id: 'edQ', type: 'search', placeholder: 'Buscar arquivo', value: ED.q, oninput: e => { ED.q = e.target.value; render(); } })),
+      groups.map(([g, f]) => {
+        const list = all.filter(f).filter(p => !q || norm(p).includes(q)).sort();
+        return list.length ? h('div', { class: 'ed-grp' }, h('span', { class: 'lbl', text: g }), list.map(p => h('button', { type: 'button', 'data-path': p, class: (p === ED.path ? 'on ' : '') + (drafts[p] ? 'dirty' : ''), title: p, onclick: () => { ED.path = p; ED.sel = null; if (!isHtml(p)) ED.mode = 'code'; go('editor', { edFile: p }); } }, h('span', { text: p.replace(/^assets\//, '') }), h('i')))) : null;
+      }),
+      h('button', { type: 'button', class: 'btn btn-sm', style: 'margin-top:10px', onclick: edNewPage }, ic('plus'), 'Nova página'));
+  }
+
+  function edPages() {
+    const p = ED.path;
+    edLoad(p);
+    const text = edText(p);
+    const html = isHtml(p);
+    if (!html && ED.mode === 'visual') ED.mode = 'code';
+    const bar = h('div', { class: 'ed-bar' },
+      h('div', { class: 'ed-file' }, h('b', { text: p }), h('span', { id: 'edState', class: 'ed-state' + (drafts[p] ? ' on' : ''), text: drafts[p] ? 'Rascunho salvo neste navegador' : 'Igual ao site publicado' })),
+      h('div', { class: 'ed-acts' },
+        html ? h('div', { class: 'seg', role: 'group', 'aria-label': 'Modo de edição' },
+          h('button', { type: 'button', 'aria-pressed': String(ED.mode === 'visual'), onclick: () => { ED.mode = 'visual'; render(); } }, ic('eye'), 'Visual'),
+          h('button', { type: 'button', 'aria-pressed': String(ED.mode === 'code'), onclick: () => { ED.mode = 'code'; render(); } }, ic('hash'), 'Código')) : null,
+        h('a', { class: 'btn btn-sm', href: '../' + p, target: '_blank', rel: 'noopener' }, ic('ext'), 'Ver no site'),
+        btn('Baixar', 'download', () => edDownload(p), 'btn-sm'),
+        drafts[p] ? btn('Descartar alterações', 'refresh', () => confirmBox(`Descartar as alterações de ${p} e voltar à versão publicada?`, () => { delete drafts[p]; saveDrafts(); ED.sel = null; render(); toast('Alterações descartadas.'); }), 'btn-sm btn-dang') : null));
+    let area;
+    if (text == null) area = h('div', { class: 'ed-wait' }, ED.loading === p ? 'Abrindo o arquivo…' : 'Arquivo indisponível.');
+    else area = ED.mode === 'visual' && html ? edVisual(p, text) : edCode(p, text);
+    return h('div', { class: 'ed-wrap' }, edFileList(), h('section', { class: 'ed-main' }, bar, area));
+  }
+
+  /* ---------- edição pelo código ---------- */
+  function edCode(path, text) {
+    const lang = langOf(path);
+    const ta = h('textarea', { class: 'ed-ta', spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off', wrap: 'off', 'aria-label': 'Código de ' + path });
+    ta.value = text;
+    const pre = h('pre', { class: 'ed-hl', 'aria-hidden': 'true' }), gut = h('div', { class: 'ed-gut', 'aria-hidden': 'true' });
+    const pos = h('span', { class: 'ed-pos' });
+    let lines = 0;
+    const paint = () => {
+      pre.innerHTML = HL[lang](ta.value) + '\n';
+      const n = ta.value.split('\n').length;
+      if (n !== lines) { lines = n; gut.textContent = Array.from({ length: n }, (_, i) => i + 1).join('\n') + '\n'; }
+    };
+    const sync = () => { pre.scrollTop = gut.scrollTop = ta.scrollTop; pre.scrollLeft = ta.scrollLeft; };
+    const where = () => { const b = ta.value.slice(0, ta.selectionStart).split('\n'); pos.textContent = `Linha ${b.length}, coluna ${b[b.length - 1].length + 1} · ${lines} linhas`; };
+    let tP, tS;
+    ta.addEventListener('input', () => { clearTimeout(tP); tP = setTimeout(() => { paint(); sync(); }, 40); clearTimeout(tS); tS = setTimeout(() => setDraft(path, ta.value), 350); where(); });
+    ta.addEventListener('scroll', sync);
+    ta.addEventListener('keyup', where); ta.addEventListener('click', where);
+    ta.addEventListener('keydown', e => {
+      if (e.key === 'Tab' && !e.ctrlKey && !e.altKey) { e.preventDefault(); ta.setRangeText('  ', ta.selectionStart, ta.selectionEnd, 'end'); ta.dispatchEvent(new Event('input')); }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); clearTimeout(tS); setDraft(path, ta.value); toast('Rascunho salvo.'); }
+    });
+    paint();
+    const fq = h('input', { type: 'search', placeholder: 'Buscar no código', value: ED.find, 'aria-label': 'Buscar no código', oninput: e => { ED.find = e.target.value; } });
+    const fr = h('input', { type: 'text', placeholder: 'Substituir por', value: ED.repl, 'aria-label': 'Substituir por', oninput: e => { ED.repl = e.target.value; } });
+    const lh = () => parseFloat(getComputedStyle(ta).lineHeight) || 20;
+    const findNext = () => {
+      if (!ED.find) return fq.focus();
+      let i = ta.value.indexOf(ED.find, ta.selectionEnd);
+      if (i < 0) i = ta.value.indexOf(ED.find);
+      if (i < 0) return toast('Nada encontrado.', true);
+      ta.focus(); ta.setSelectionRange(i, i + ED.find.length);
+      const line = ta.value.slice(0, i).split('\n').length;
+      ta.scrollTop = Math.max(0, (line - 6) * lh()); sync(); where();
+    };
+    fq.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); findNext(); } });
+    const replAll = () => {
+      if (!ED.find) return fq.focus();
+      const n = ta.value.split(ED.find).length - 1;
+      if (!n) return toast('Nada encontrado.', true);
+      ta.value = ta.value.split(ED.find).join(ED.repl); paint(); setDraft(path, ta.value); toast(`${n} ocorrência(s) substituída(s).`);
+    };
+    return h('div', { class: 'ed-code-wrap' },
+      h('div', { class: 'ed-find' }, fq, btn('Próximo', 'search', findNext, 'btn-sm'), fr, btn('Substituir todos', 'refresh', replAll, 'btn-sm'), pos),
+      h('div', { class: 'ed-code' }, gut, h('div', { class: 'ed-layers' }, pre, ta)),
+      h('p', { class: 'ed-tip', text: 'Ctrl+S guarda o rascunho na hora. As alterações também são guardadas automaticamente enquanto você digita.' }));
+  }
+
+  /* ---------- edição visual ---------- */
+  const ED_TEXT = 'h1,h2,h3,h4,h5,h6,p,li,blockquote,figcaption,dt,dd,th,td,summary,label,legend,a,button,small,span.lbl-sm,span.eyebrow,b.cargo';
+  function edDocs(text) {
+    const src = new DOMParser().parseFromString(text, 'text/html');
+    [...src.querySelectorAll('body *')].forEach((el, i) => el.setAttribute('data-ed', i));
+    return src;
+  }
+  function edSerialize(src) {
+    const out = src.cloneNode(true);
+    out.querySelectorAll('[data-ed]').forEach(e => e.removeAttribute('data-ed'));
+    return '<!doctype html>\n' + out.documentElement.outerHTML + '\n';
+  }
+  function edVisual(path, text) {
+    const src = edDocs(text);
+    const view = src.cloneNode(true);
+    view.querySelectorAll('script, meta[http-equiv]').forEach(e => e.remove());
+    const base = view.createElement('base'); base.href = '../'; view.head.prepend(base);
+    const css = view.createElement('link'); css.rel = 'stylesheet'; css.href = 'painel/editor-frame.css'; view.head.append(css);
+    /* imagens enviadas e ainda não publicadas aparecem pelo rascunho */
+    view.querySelectorAll('img').forEach(img => { const d = drafts[img.getAttribute('src')]; if (d && d.data) img.setAttribute('src', d.data); });
+    view.querySelectorAll(ED_TEXT).forEach(el => {
+      if (el.closest('[contenteditable]') || !el.textContent.trim()) return;
+      el.setAttribute('contenteditable', 'true'); el.setAttribute('spellcheck', 'true');
+    });
+    const frame = h('iframe', { class: 'ed-frame', title: 'Edição visual de ' + path, sandbox: 'allow-same-origin' });
+    frame.srcdoc = '<!doctype html>\n' + view.documentElement.outerHTML;
+    const tools = h('div', { class: 'ed-tools', id: 'edTools' });
+    const drawTools = () => {
+      const s = ED.sel && src.querySelector(`[data-ed="${ED.sel}"]`);
+      if (!s) { tools.replaceChildren(h('span', { class: 'ed-hint' }, ic('edit'), 'Clique num texto para editar direto na página. Clique numa imagem ou num bloco para ver as opções.')); return; }
+      const a = s.closest('a'), img = s.tagName === 'IMG' ? s : null;
+      const label = (img ? 'Imagem' : s.tagName.toLowerCase()) + (s.className ? ' .' + String(s.className).split(' ')[0] : '');
+      tools.replaceChildren(h('span', { class: 'ed-sel' }, h('b', { text: label }), h('small', { text: (img ? img.getAttribute('src') : s.textContent.trim()).slice(0, 60) })),
+        img ? btn('Trocar imagem', 'image', () => edPickImage(img, path, src), 'btn-sm btn-gold') : null,
+        a ? btn('Editar link', 'ext', () => edLink(a, path, src), 'btn-sm') : null,
+        btn('Editar HTML', 'hash', () => edBlockHtml(s, path, src), 'btn-sm'),
+        h('button', { type: 'button', class: 'ibtn', title: 'Subir bloco', 'aria-label': 'Subir bloco', onclick: () => edMove(s, -1, path, src) }, ic('up')),
+        h('button', { type: 'button', class: 'ibtn', title: 'Descer bloco', 'aria-label': 'Descer bloco', onclick: () => edMove(s, 1, path, src) }, ic('down')),
+        h('button', { type: 'button', class: 'ibtn', title: 'Duplicar bloco', 'aria-label': 'Duplicar bloco', onclick: () => { s.after(s.cloneNode(true)); edCommit(path, src, 'Bloco duplicado.'); } }, ic('copy')),
+        h('button', { type: 'button', class: 'ibtn', title: 'Remover bloco', 'aria-label': 'Remover bloco', onclick: () => confirmBox('Remover este bloco da página?', () => { s.remove(); ED.sel = null; edCommit(path, src, 'Bloco removido.'); }) }, ic('trash')));
+    };
+    frame.addEventListener('load', () => {
+      const d = frame.contentDocument; if (!d) return;
+      let t;
+      d.addEventListener('input', e => {
+        const el = e.target.closest && e.target.closest('[contenteditable][data-ed]'); if (!el) return;
+        const s = src.querySelector(`[data-ed="${el.dataset.ed}"]`); if (!s) return;
+        const c = el.cloneNode(true);
+        c.querySelectorAll('[contenteditable]').forEach(x => { x.removeAttribute('contenteditable'); x.removeAttribute('spellcheck'); });
+        /* o navegador digita espaço como &nbsp; dentro do texto editável: entre palavras vira espaço comum */
+        s.innerHTML = c.innerHTML.replace(/(\S)&nbsp;(?=\S)/g, '$1 ').replace(/&nbsp;(?= )/g, '');
+        clearTimeout(t); t = setTimeout(() => setDraft(path, edSerialize(src)), 400);
+      });
+      d.addEventListener('click', e => {
+        if (e.target.closest('a, button, summary, label')) e.preventDefault();
+        const el = e.target.closest('[data-ed]'); if (!el) return;
+        d.querySelectorAll('.ed-on').forEach(x => x.classList.remove('ed-on'));
+        el.classList.add('ed-on'); ED.sel = el.dataset.ed; drawTools();
+      });
+      d.addEventListener('submit', e => e.preventDefault());
+      d.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); setDraft(path, edSerialize(src)); toast('Rascunho salvo.'); } });
+      if (ED.sel) { const el = d.querySelector(`[data-ed="${ED.sel}"]`); if (el) { el.classList.add('ed-on'); el.scrollIntoView({ block: 'center' }); } }
+    });
+    drawTools();
+    return h('div', { class: 'ed-vis' }, tools, frame,
+      h('p', { class: 'ed-tip', text: 'Gráficos, depoimentos em carrossel e formulários são montados quando a página abre no site; aqui eles aparecem como blocos simples. Para mudanças mais finas, use o modo Código.' }));
+  }
+  function edCommit(path, src, msg) { setDraft(path, edSerialize(src)); render(); if (msg) toast(msg); }
+  function edMove(s, dir, path, src) {
+    const sib = dir < 0 ? s.previousElementSibling : s.nextElementSibling;
+    if (!sib) return toast(dir < 0 ? 'O bloco já é o primeiro.' : 'O bloco já é o último.', true);
+    if (dir < 0) sib.before(s); else sib.after(s);
+    edCommit(path, src, 'Bloco movido.');
+  }
+  function edLink(a, path, src) {
+    openForm({ title: 'Editar link', eyebrow: 'Editor do site', fields: [
+      { name: 'texto', label: 'Texto do link', value: a.textContent.trim(), full: true, help: 'Ícones dentro do botão são mantidos quando o texto não muda.' },
+      { name: 'href', label: 'Endereço', value: a.getAttribute('href') || '', required: true, full: true, placeholder: 'Ex.: eventos.html, #contato ou https://…' },
+      { name: 'nova', label: 'Abrir em nova aba?', type: 'select', options: [['nao', 'Não'], ['sim', 'Sim']], value: a.target === '_blank' ? 'sim' : 'nao' }
+    ], onSubmit: d => {
+      if (/^\s*javascript:/i.test(d.href)) { toast('Endereço não permitido.', true); return false; }
+      a.setAttribute('href', d.href);
+      if (d.nova === 'sim') { a.setAttribute('target', '_blank'); a.setAttribute('rel', 'noopener noreferrer'); } else { a.removeAttribute('target'); a.removeAttribute('rel'); }
+      if (d.texto && d.texto !== a.textContent.trim()) {
+        const svgs = [...a.querySelectorAll('svg')];
+        a.textContent = d.texto + (svgs.length ? ' ' : ''); svgs.forEach(s => a.append(s));
+      }
+      edCommit(path, src, 'Link atualizado.');
+    } });
+  }
+  function edBlockHtml(s, path, src) {
+    const c = s.cloneNode(true); c.removeAttribute('data-ed'); c.querySelectorAll('[data-ed]').forEach(x => x.removeAttribute('data-ed'));
+    const ta = h('textarea', { class: 'ed-mini', spellcheck: 'false' }); ta.value = c.outerHTML;
+    openModal('Editar HTML do bloco', 'Editor do site', h('div', { class: 'm-form' },
+      h('label', { class: 'f full' }, h('span', { text: 'Código do bloco selecionado' }), ta),
+      h('div', { class: 'm-acts' }, h('button', { type: 'button', class: 'btn btn-ghost', text: 'Cancelar', onclick: () => modal.close() }),
+        h('button', { type: 'button', class: 'btn btn-ink', onclick: () => {
+          const tpl = src.createElement('template'); tpl.innerHTML = ta.value.trim();
+          if (!tpl.content.childNodes.length) return toast('O bloco ficou vazio. Para apagar, use Remover bloco.', true);
+          s.replaceWith(tpl.content); ED.sel = null; modal.close(); edCommit(path, src, 'Bloco atualizado.');
+        } }, ic('check'), 'Aplicar'))));
+  }
+  function edPickImage(img, path, src) {
+    const alt = h('input', { type: 'text', value: img.getAttribute('alt') || '', maxlength: 200 });
+    const cur = img.getAttribute('src') || '';
+    const pick = p => { img.setAttribute('src', p); img.removeAttribute('srcset'); img.setAttribute('alt', alt.value.trim()); modal.close(); edCommit(path, src, 'Imagem trocada.'); };
+    const up = h('input', { type: 'file', accept: 'image/*', onchange: async e => {
+      const f = e.target.files[0]; if (!f || !f.type.startsWith('image/')) return;
+      const r = await shrink(f); if (!r.src) return toast('Não foi possível ler a imagem.', true);
+      const name = 'assets/img/enviadas/' + (norm(f.name.replace(/\.[^.]+$/, '')).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'imagem') + '-' + uid().slice(0, 4) + '.jpg';
+      drafts[name] = { data: r.src, t: Date.now() }; if (!saveDrafts()) { delete drafts[name]; return; }
+      ED.imgs = [...new Set([...ED.imgs, name])]; pick(name);
+    } });
+    const imgs = [...new Set([...ED.imgs, ...Object.keys(drafts).filter(p => drafts[p].data)])].filter(p => isImg(p));
+    openModal('Trocar imagem', 'Editor do site', h('div', { class: 'm-form' },
+      h('label', { class: 'f full' }, h('span', { text: 'Texto alternativo (descreve a imagem para quem não enxerga)' }), alt),
+      h('label', { class: 'f full' }, h('span', { text: 'Enviar uma imagem nova' }), up),
+      h('div', { class: 'full' }, h('span', { class: 'lbl', text: 'Ou escolha uma imagem do site' }),
+        h('div', { class: 'ed-pick' }, imgs.map(p => h('button', { type: 'button', class: p === cur ? 'on' : '', title: p, onclick: () => pick(p) }, h('img', { src: drafts[p] && drafts[p].data ? drafts[p].data : '../' + p, alt: '', loading: 'lazy' }), h('small', { text: p.split('/').pop() }))))),
+      h('div', { class: 'm-acts' }, h('button', { type: 'button', class: 'btn btn-ghost', text: 'Cancelar', onclick: () => modal.close() }),
+        h('button', { type: 'button', class: 'btn btn-ink', onclick: () => { img.setAttribute('alt', alt.value.trim()); modal.close(); edCommit(path, src, 'Texto da imagem atualizado.'); } }, ic('check'), 'Salvar só o texto'))));
+  }
+  function edNewPage() {
+    const pages = (ED.files || []).filter(isHtml);
+    openForm({ title: 'Nova página', eyebrow: 'Editor do site', fields: [
+      { name: 'nome', label: 'Endereço da página', required: true, full: true, placeholder: 'Ex.: transparencia', help: 'Só letras minúsculas, números e hífen. O site cria o arquivo transparencia.html.' },
+      { name: 'base', label: 'Começar a partir de', type: 'select', options: pages, value: 'quem-somos.html', full: true }
+    ], submit: 'Criar página', onSubmit: d => {
+      const nome = norm(d.nome).replace(/\.html?$/, '').replace(/[^a-z0-9-]+/g, '-').replace(/^-|-$/g, '');
+      if (!nome) { toast('Escolha um nome válido.', true); return false; }
+      const p = nome + '.html';
+      if ((ED.files || []).includes(p) || drafts[p]) { toast('Já existe uma página com esse nome.', true); return false; }
+      const startIt = text => { drafts[p] = { text, novo: true, t: Date.now() }; ED.base[p] = ''; saveDrafts(); ED.path = p; ED.mode = 'visual'; render(); toast('Página criada como rascunho. Edite e publique quando estiver pronta.'); };
+      const t = edText(d.base);
+      if (t != null) startIt(t); else fetch('../' + d.base, { cache: 'no-store' }).then(r => r.text()).then(startIt).catch(() => toast('Não foi possível copiar a página base.', true));
+    } });
+  }
+
+  /* ---------- imagens ---------- */
+  function edImages() {
+    const imgs = [...new Set([...ED.imgs, ...Object.keys(drafts).filter(p => drafts[p].data)])].filter(isImg).sort();
+    const up = h('input', { type: 'file', accept: 'image/*', multiple: true, class: 'sr', id: 'edUp', onchange: async e => {
+      let n = 0;
+      for (const f of [...e.target.files].slice(0, 12)) {
+        if (!f.type.startsWith('image/')) continue;
+        const r = await shrink(f); if (!r.src) continue;
+        const name = 'assets/img/enviadas/' + (norm(f.name.replace(/\.[^.]+$/, '')).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'imagem') + '-' + uid().slice(0, 4) + '.jpg';
+        drafts[name] = { data: r.src, t: Date.now() }; n++;
+      }
+      if (n && saveDrafts()) { render(); toast(`${n} imagem(ns) pronta(s) para publicar. Use "Copiar endereço" para colocá-las nas páginas.`); }
+    } });
+    return card('Imagens do site', 'Envie imagens novas ou substitua uma existente. As fotos são reduzidas para no máximo 1200 px antes de guardar.', [h('label', { class: 'btn btn-gold btn-sm', for: 'edUp' }, ic('upload'), 'Enviar imagens'), up],
+      imgs.length ? h('div', { class: 'ed-imgs' }, imgs.map(p => {
+        const d = drafts[p];
+        return h('figure', { class: d ? 'dirty' : '' }, h('img', { src: d && d.data ? d.data : '../' + p, alt: '', loading: 'lazy' }),
+          h('figcaption', null, h('small', { text: p.replace('assets/img/', '') }),
+            h('div', { class: 'acts' },
+              h('button', { type: 'button', class: 'ibtn', title: 'Copiar endereço', 'aria-label': 'Copiar endereço', onclick: () => { navigator.clipboard && navigator.clipboard.writeText(p).then(() => toast('Endereço copiado: ' + p)); } }, ic('copy')),
+              h('label', { class: 'ibtn', title: 'Substituir por outra imagem', 'aria-label': 'Substituir imagem' }, ic('refresh'), h('input', { type: 'file', accept: 'image/*', class: 'sr', onchange: async e => {
+                const f = e.target.files[0]; if (!f) return; const r = await shrink(f); if (!r.src) return;
+                drafts[p] = { data: r.src, t: Date.now() }; if (saveDrafts()) { render(); toast('Imagem substituída. Publique para aplicar no site.'); }
+              } })),
+              d ? h('button', { type: 'button', class: 'ibtn', title: 'Descartar', 'aria-label': 'Descartar', onclick: () => { delete drafts[p]; saveDrafts(); render(); } }, ic('x')) : null)));
+      })) : empty('Carregando a lista de imagens…', 'image'));
+  }
+
+  /* ---------- publicação ---------- */
+  function edPublishTab() {
+    const c = edCfg(), list = changed(), log = edGet(ED_LOG, []);
+    const f = (name, label, value, attrs = {}) => h('label', { class: 'f' }, h('span', { text: label }), h('input', Object.assign({ name, value, autocomplete: 'off' }, attrs)));
+    const form = h('form', { class: 'm-form', novalidate: true, onsubmit: e => {
+      e.preventDefault();
+      const fd = new FormData(form), repo = String(fd.get('repo')).trim(), branch = String(fd.get('branch')).trim() || 'main', pasta = String(fd.get('pasta')).trim().replace(/^\/+|\/+$/g, ''), token = String(fd.get('token')).trim();
+      if (!/^[\w.-]+\/[\w.-]+$/.test(repo)) return toast('Repositório no formato dono/nome.', true);
+      edSet(ED_CFG, { repo, branch, pasta });
+      try { sessionStorage.removeItem(ED_TOKEN); localStorage.removeItem(ED_TOKEN); if (token) (fd.get('lembrar') ? localStorage : sessionStorage).setItem(ED_TOKEN, token); } catch (err) {}
+      toast('Configuração salva.'); render();
+    } },
+      f('repo', 'Repositório (dono/nome)', c.repo, { placeholder: 'Ex.: empresa/site' }),
+      f('branch', 'Ramo', c.branch, { placeholder: 'main' }),
+      f('pasta', 'Pasta do site no repositório', c.pasta, { placeholder: 'Vazio = raiz' }),
+      f('token', 'Token de acesso', c.token, { type: 'password', placeholder: 'github_pat_…' }),
+      h('label', { class: 'f full', style: 'flex-direction:row;align-items:center;gap:8px' }, h('input', { type: 'checkbox', name: 'lembrar', checked: (() => { try { return !!localStorage.getItem(ED_TOKEN); } catch (e) { return false; } })() }), h('span', { text: 'Lembrar o token neste computador (sem marcar, ele é apagado ao fechar o navegador)' })),
+      h('div', { class: 'm-acts' }, btn('Testar conexão', 'globe', () => edTest(), 'btn-sm'), h('button', { type: 'submit', class: 'btn btn-ink btn-sm' }, ic('check'), 'Salvar configuração')));
+    return h('div', { class: 'grid g2' },
+      card('Alterações para publicar', list.length ? 'Confira a lista antes de publicar. Cada arquivo vai para o site como está no rascunho.' : 'Nenhuma alteração pendente.', list.length ? [btn('Publicar', 'upload', () => edPublishAsk(), 'btn-gold btn-sm'), btn('Baixar pacote', 'download', () => edZip(), 'btn-sm')] : null,
+        list.length ? h('ul', { class: 'ed-list' }, list.sort().map(p => h('li', null, h('span', null, h('b', { text: p }), h('small', { text: drafts[p].novo ? 'página nova' : drafts[p].data ? 'imagem' : `${(drafts[p].text || '').length.toLocaleString('pt-BR')} caracteres` })),
+          h('div', { class: 'acts' }, drafts[p].text != null ? btn('Abrir', 'edit', () => { ED.path = p; S.edTab = 'paginas'; render(); }, 'btn-sm') : null,
+            h('button', { type: 'button', class: 'ibtn', title: 'Descartar', 'aria-label': 'Descartar ' + p, onclick: () => confirmBox(`Descartar as alterações de ${p}?`, () => { delete drafts[p]; saveDrafts(); render(); }) }, ic('trash')))))) : empty('Edite uma página, um estilo ou uma imagem para ver aqui.', 'check')),
+      card('Onde publicar', 'O site fica num repositório do GitHub e é atualizado em cerca de um minuto depois de publicar. Crie um token "fine-grained" com permissão Contents: Read and write só para o repositório do site.', null, form),
+      log.length ? card('Últimas publicações', null, null, h('ul', { class: 'ed-list' }, log.slice(0, 12).map(l => h('li', null, h('span', null, h('b', { text: l.quando }), h('small', { text: l.arquivos.join(', ') })))))) : null);
+  }
+  const ghHeaders = c => ({ Authorization: 'Bearer ' + c.token, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' });
+  const ghUrl = (c, p) => `https://api.github.com/repos/${c.repo}/contents/` + ((c.pasta ? c.pasta + '/' : '') + p).split('/').map(encodeURIComponent).join('/');
+  async function edTest() {
+    const c = edCfg(); if (!c.token) return toast('Informe e salve o token primeiro.', true);
+    try {
+      const r = await fetch(`https://api.github.com/repos/${c.repo}`, { headers: ghHeaders(c) });
+      if (!r.ok) throw new Error(r.status === 401 ? 'token inválido' : r.status === 404 ? 'repositório não encontrado ou sem acesso' : 'erro ' + r.status);
+      const j = await r.json();
+      toast(j.permissions && j.permissions.push === false ? 'Conectado, mas o token não tem permissão de escrita.' : 'Conexão funcionando com ' + j.full_name + '.', j.permissions && j.permissions.push === false);
+    } catch (e) { toast('Falha na conexão: ' + e.message + '.', true); }
+  }
+  const b64 = s => { const b = new TextEncoder().encode(s); let bin = ''; for (let i = 0; i < b.length; i += 0x8000) bin += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(bin); };
+  function edPublishAsk() {
+    const list = changed();
+    if (!list.length) return toast('Não há alterações para publicar.', true);
+    const c = edCfg();
+    if (!c.token) { S.edTab = 'publicar'; go('editor'); return toast('Configure o repositório e o token para publicar. Ou use "Baixar pacote".', true); }
+    openModal('Publicar alterações', 'Editor do site', h('div', { class: 'm-form' },
+      h('p', { class: 'full', style: 'margin:0', text: `${list.length} arquivo(s) vão para ${c.repo} (${c.branch}). O site atualiza em cerca de um minuto.` }),
+      h('ul', { class: 'full ed-list' }, list.map(p => h('li', null, h('b', { text: p })))),
+      h('div', { class: 'm-acts' }, h('button', { type: 'button', class: 'btn btn-ghost', text: 'Cancelar', onclick: () => modal.close() }),
+        h('button', { type: 'button', class: 'btn btn-gold', onclick: e => { e.currentTarget.disabled = true; edPublish(list); } }, ic('upload'), 'Publicar agora'))));
+  }
+  async function edPublish(list) {
+    const c = edCfg(), H = ghHeaders(c), ok = [], pub = edGet(ED_PUB, {});
+    try {
+      for (const p of list) {
+        const d = drafts[p], url = ghUrl(c, p);
+        const g = await fetch(url + '?ref=' + encodeURIComponent(c.branch), { headers: H, cache: 'no-store' });
+        let sha;
+        if (g.ok) sha = (await g.json()).sha; else if (g.status !== 404) throw new Error(`${p}: ${g.status === 401 ? 'token inválido' : 'erro ' + g.status}`);
+        const content = d.data ? d.data.split(',')[1] : b64(d.text);
+        const r = await fetch(url, { method: 'PUT', headers: H, body: JSON.stringify({ message: 'Atualização pelo painel: ' + p, content, sha, branch: c.branch }) });
+        if (!r.ok) throw new Error(`${p}: ${r.status === 409 ? 'o arquivo mudou no servidor, abra de novo e refaça' : r.status === 403 ? 'sem permissão de escrita' : 'erro ' + r.status}`);
+        ok.push(p);
+        if (d.text != null) { pub[p] = { text: d.text, t: Date.now() }; ED.base[p] = d.text; }
+        if (d.novo && ED.files && !ED.files.includes(p)) ED.files.push(p);
+        if (d.data && !ED.imgs.includes(p)) ED.imgs.push(p);
+        delete drafts[p];
+      }
+      toast(`${ok.length} arquivo(s) publicados. O site atualiza em cerca de um minuto.`);
+    } catch (e) {
+      toast('Publicação interrompida: ' + e.message + (ok.length ? ` (${ok.length} já publicados)` : ''), true);
+    }
+    if (ok.length) { const log = edGet(ED_LOG, []); log.unshift({ quando: nowBR(), arquivos: ok }); edSet(ED_LOG, log.slice(0, 30)); }
+    edSet(ED_PUB, pub); saveDrafts(); if (modal.open) modal.close(); render();
+  }
+
+  /* ---------- baixar ---------- */
+  function edDownload(p) {
+    const d = drafts[p], text = edText(p);
+    const blob = d && d.data ? dataBlob(d.data) : new Blob([text || ''], { type: 'text/plain;charset=utf-8' });
+    const a = h('a', { href: URL.createObjectURL(blob), download: p.split('/').pop() }); document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+  const dataBlob = u => { const [m, b] = u.split(','); const bin = atob(b); const a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return new Blob([a], { type: m.slice(5).split(';')[0] }); };
+  /* .zip sem compressão, com as pastas do site, para enviar à hospedagem */
+  const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+  const crc32 = b => { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+  async function edZip() {
+    const list = changed();
+    if (!list.length) return toast('Não há alterações para baixar.', true);
+    const enc = new TextEncoder(), parts = [], dir = []; let off = 0;
+    const u16 = v => [v & 255, (v >> 8) & 255], u32 = v => [v & 255, (v >> 8) & 255, (v >> 16) & 255, (v >>> 24) & 255];
+    for (const p of list) {
+      const d = drafts[p];
+      const data = d.data ? new Uint8Array(await dataBlob(d.data).arrayBuffer()) : enc.encode(d.text);
+      const name = enc.encode(p), crc = crc32(data);
+      const head = new Uint8Array([...u32(0x04034b50), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(name.length), ...u16(0)]);
+      parts.push(head, name, data);
+      dir.push(new Uint8Array([...u32(0x02014b50), ...u16(20), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(name.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(off)]), name);
+      off += head.length + name.length + data.length;
+    }
+    const dirLen = dir.reduce((s, x) => s + x.length, 0);
+    const end = new Uint8Array([...u32(0x06054b50), ...u16(0), ...u16(0), ...u16(list.length), ...u16(list.length), ...u32(dirLen), ...u32(off), ...u16(0)]);
+    const blob = new Blob([...parts, ...dir, end], { type: 'application/zip' });
+    const a = h('a', { href: URL.createObjectURL(blob), download: 'site-sigemec-alteracoes.zip' }); document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    toast(`Pacote com ${list.length} arquivo(s) gerado. Envie para a hospedagem mantendo as pastas.`);
+  }
+
   /* =================== LOGIN =================== */
   function startApp(welcomeName) {
     const app = $('#app'); app.hidden = false; requestAnimationFrame(() => app.classList.add('in'));
     const name = sessionStorage.getItem('sgm-painel-nome') || 'Equipe comercial';
     $('#uName').textContent = name; $('#uAv').textContent = ini(name);
+    const v = (location.hash.match(/^#\/([\w-]+)/) || [])[1];
+    if (v && VIEWS().includes(v)) S.view = v;
+    history.replaceState({ v: S.view }, '', '#/' + S.view);
     render(true);
     if (welcomeName) document.body.append(h('div', { class: 'welcome', role: 'status' }, h('span', { class: 'av', text: ini(welcomeName) }), h('span', null, 'Seja bem-vindo aos seus resultados, ', h('b', { text: welcomeName.split(' ')[0] }), '.')));
   }
@@ -1015,7 +1490,7 @@
     }
     h1.replaceChildren(...parts.flatMap((p, i) => [h('span', { class: 'w', 'aria-hidden': 'true' }, h('span', { style: `transition-delay:${200 + i * 90}ms` }, p)), ' ']));
     setTimeout(() => hd.classList.add('in'), 120);
-    $('#lTicker').replaceChildren(...[0, 1].flatMap(() => [['Gestão', '#E0A729'], ['PAR · SIMEC', '#EA6036'], ['SIGPC Ágil', '#39A9DB'], ['Fundeb', '#40C965'], ['PNAE · PNATE · PDDE', '#E0A729'], ['RDQA · SUS', '#39A9DB'], ['Educacenso', '#40C965'], ['Transferegov', '#EA6036']].map(([t, c]) => h('span', { style: `--c:${c}` }, h('i'), t))));
+    $('#lTicker').replaceChildren(...[0, 1].flatMap(() => [['Consultoria', '#D9A029'], ['PAR · SIMEC', '#D9A029'], ['SIGPC Ágil', '#399FD1'], ['Fundeb', '#40C065'], ['PNAE · PNATE · PDDE', '#D9A029'], ['e-Gestor APS', '#399FD1'], ['Educacenso', '#40C065'], ['Transferegov', '#8FA6CC']].map(([t, c]) => h('span', { style: `--c:${c}` }, h('i'), t))));
     $$('.chip-f').forEach((c, i) => setTimeout(() => c.classList.add('in'), 900 + i * 220));
     setTimeout(() => $$('[data-up]', L).forEach(b => countUp(b, parseFloat(b.dataset.up), { dec: +b.dataset.dec || 0, pre: b.dataset.pre || '', suf: b.dataset.suf || '', dur: 1800 })), 700);
     /* parallax leve com o mouse */

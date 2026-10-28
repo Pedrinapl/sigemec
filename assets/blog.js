@@ -1,9 +1,9 @@
 /* SIGEMEC — matérias do blog. Para publicar uma nova, adicione um objeto no topo da lista. */
 const CATS = {
-  programas:    { label: 'Programas',    c: 'var(--edu)',  mark: 'm-edu',    pat: 'pat-edu' },
-  politicas:    { label: 'Políticas',    c: 'var(--sau)',  mark: 'm-sau',    pat: 'pat-sau' },
-  fornecedores: { label: 'Fornecedores', c: 'var(--gold)', mark: 'm-gestao', pat: 'pat-gestao' },
-  gestao:       { label: 'Gestão',       c: 'var(--esc)',  mark: 'm-esc',    pat: 'pat-esc' }
+  programas:    { label: 'Programas',    c: 'var(--green)', img: 'sala-de-aula.jpg' },
+  politicas:    { label: 'Políticas',    c: 'var(--blue)',  img: 'alunos.jpg' },
+  fornecedores: { label: 'Fornecedores', c: 'var(--gold)',  img: 'consultoria-reuniao.jpg' },
+  gestao:       { label: 'Gestão',       c: 'var(--navy)',  img: 'tela-gestao-controle.jpg' }
 };
 
 const POSTS = [
@@ -44,7 +44,7 @@ const POSTS = [
   cat: 'gestao',
   date: '2026-10-15',
   title: 'Prestação de contas no SIGPC: as pendências que mais bloqueiam repasses',
-  summary: 'A maior parte dos bloqueios não vem de desvio, e sim de documento faltando, prazo perdido e conta mal organizada.',
+  summary: 'A maior parte dos bloqueios não vem de desvio de recursos, e sim de documentos em falta, prazos perdidos e contas mal organizadas.',
   body: `
 <p>O SIGPC é o sistema do FNDE onde o município presta contas dos recursos recebidos em programas como PNAE, PNATE e PDDE. Quando a prestação não é enviada, ou é enviada com problema, o município pode ficar inadimplente e ter novos repasses suspensos. Na prática, a creche espera, o transporte atrasa e o gestor responde por isso.</p>
 <p>A boa notícia é que a maior parte das pendências que vemos nos municípios tem causa administrativa. Elas se repetem, e por isso dá para prevenir.</p>
@@ -66,10 +66,10 @@ const POSTS = [
 <li>Acesso ao SIGPC com mais de uma pessoa habilitada, para que férias e exonerações não parem tudo.</li>
 <li>Reunião com o conselho antes do prazo, com tempo para ele analisar.</li>
 </ol>
-<div class="box"><b>Herdou pendência?</b>Pendências de gestões anteriores continuam sendo do município. O primeiro passo é levantar o status de cada programa nos últimos anos e separar o que ainda pode ser regularizado.</div>
+<div class="box"><b>Pendências herdadas</b>Pendências de gestões anteriores continuam sendo do município. O primeiro passo é levantar o status de cada programa nos últimos anos e separar o que ainda pode ser regularizado.</div>
 <h2>Quando a pendência já existe</h2>
 <p>Se o município já está com prestação em atraso ou com diligência aberta, o caminho é organizar a documentação disponível, responder o que o FNDE pediu e acompanhar o andamento até a baixa. Em muitos casos, a regularização destrava recursos que estavam parados há anos.</p>
-<p>O pré-diagnóstico gratuito do SIGEMEC mostra o status das prestações de contas do município nos últimos 15 anos e aponta por onde começar.</p>`
+<p>O diagnóstico gratuito do SIGEMEC mostra a situação das prestações de contas do município nos últimos anos e aponta por onde começar.</p>`
 },
 {
   slug: 'cnpj-proprio-secretaria-educacao',
@@ -111,7 +111,7 @@ const POSTS = [
 <h2>PNAE: alimentação escolar</h2>
 <p>O recurso é repassado ao município para a compra de gêneros alimentícios. Alguns pontos pedem atenção o ano inteiro:</p>
 <ul>
-<li>o cardápio é responsabilidade de nutricionista vinculado ao programa;</li>
+<li>o cardápio é elaborado por um nutricionista, responsável técnico pelo programa;</li>
 <li>a lei reserva um percentual mínimo das compras para a agricultura familiar, normalmente por chamada pública;</li>
 <li>o Conselho de Alimentação Escolar acompanha a execução e emite parecer sobre a prestação de contas.</li>
 </ul>
@@ -135,7 +135,7 @@ const POSTS = [
   cat: 'fornecedores',
   date: '2026-09-23',
   title: 'Como escolher fornecedores para a educação sem travar a licitação',
-  summary: 'Com a Lei 14.133, planejar a compra virou parte da compra. Fornecedor bom começa num estudo bem feito.',
+  summary: 'Com a Lei 14.133, o planejamento passou a fazer parte da compra. A escolha de um bom fornecedor começa com um estudo bem feito.',
   body: `
 <p>Desde que a Lei 14.133/2021 passou a ser a regra para as contratações públicas, o planejamento ganhou peso. Para a educação, isso significa que a compra de mobiliário, equipamentos, uniformes ou serviços começa muito antes do edital, e que a escolha do fornecedor depende da qualidade desse começo.</p>
 <h2>Planeje o ano inteiro</h2>
@@ -148,7 +148,7 @@ const POSTS = [
 <li>registre a data e a origem de cada cotação;</li>
 <li>descarte valores muito fora da média e explique por quê.</li>
 </ul>
-<div class="box"><b>Atalho legítimo</b>A adesão a atas de registro de preços de outros órgãos pode acelerar a compra, desde que a vantagem seja demonstrada e as regras de adesão sejam respeitadas.</div>
+<div class="box"><b>Alternativa prevista em lei</b>A adesão a atas de registro de preços de outros órgãos pode acelerar a compra, desde que a vantagem seja demonstrada e as regras de adesão sejam respeitadas.</div>
 <h2>Avalie o fornecedor além do preço</h2>
 <p>O menor preço só é vantajoso se a entrega acontecer. Na habilitação e na execução do contrato, observe a capacidade técnica comprovada, o histórico de entregas a outros órgãos e a assistência técnica na região. Registrar o desempenho de cada fornecedor ao fim do contrato ajuda as próximas compras.</p>
 <h2>Onde encontrar referências</h2>
@@ -166,13 +166,13 @@ const POSTS = [
 <p>A justificativa de uma obra começa pelo número de crianças sem vaga. Organize a lista de espera por bairro ou região, cruze com dados do Censo Escolar e registre a capacidade atual de cada unidade. Esses números sustentam o pedido e ajudam a escolher onde construir.</p>
 <h2>2. Regularize o terreno</h2>
 <p>Terreno é o ponto em que mais pedidos travam. Ele precisa ser do município, com documentação em dia, sem impedimento ambiental e com acesso a água, energia e esgoto. Ter dois ou três terrenos já regularizados e mapeados é uma vantagem real.</p>
-<h2>3. Tenha a documentação técnica encaminhada</h2>
+<h2>3. Adiante a documentação técnica</h2>
 <ul>
 <li>levantamento topográfico e sondagem, quando exigidos;</li>
 <li>declarações de viabilidade de serviços públicos;</li>
 <li>equipe técnica de engenharia identificada para acompanhar a obra.</li>
 </ul>
-<div class="box"><b>Lembre</b>Obras paradas de seleções anteriores pesam contra o município. Antes de pedir uma nova, organize a situação das que já existem.</div>
+<div class="box"><b>Atenção</b>Obras paradas de seleções anteriores pesam contra o município. Antes de pedir uma nova, organize a situação das que já existem.</div>
 <h2>4. Planeje o funcionamento</h2>
 <p>Uma unidade nova precisa de professores, equipe de apoio, alimentação escolar e manutenção. Os órgãos federais avaliam se o município terá condições de manter a creche aberta. Mostre isso no planejamento orçamentário.</p>
 <h2>5. Acompanhe do cadastro à inauguração</h2>
@@ -190,8 +190,8 @@ const POSTS = [
   const card = (p, feature) => {
     const c = CATS[p.cat];
     return `<a class="post-card${feature ? ' feature' : ''}" href="${href(p)}" ${isBlog ? 'data-route' : ''} style="--c:${c.c}">
-      <div class="cover"><div class="bgpat ${c.pat}"></div><svg><use href="#${c.mark}"/></svg></div>
-      <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+      <div class="cover"><img src="assets/img/${c.img}" alt="" loading="lazy"></div>
+      <div class="post-txt">
         <div class="post-meta"><span class="cat"><i></i>${c.label}</span><span>${fmtDate(p.date)}</span><span>${minutes(p.body)} min de leitura</span></div>
         <h3>${p.title}</h3><p>${p.summary}</p><span class="go">Ler matéria ${arr}</span>
       </div></a>`;
@@ -225,14 +225,14 @@ const POSTS = [
     const c = CATS[p.cat];
     const related = POSTS.filter(x => x.slug !== slug).slice(0, 3);
     post.innerHTML = `<div class="wrap narrow">
-        <a class="back" href="#todas" data-route><svg><use href="#i-arr"/></svg>Todas as matérias</a>
+        <a class="back-link" href="#todas" data-route><svg><use href="#i-back"/></svg>Todas as matérias</a>
         <h1>${p.title}</h1>
         <p class="summary">${p.summary}</p>
         <div class="post-meta" style="--c:${c.c}"><span class="cat"><i></i>${c.label}</span><span>${fmtDate(p.date)}</span><span>${minutes(p.body)} min de leitura</span><span>Equipe SIGEMEC</span></div>
         <div class="prose">${p.body}</div>
       </div>
-      <div class="wrap" style="margin-top:80px"><div class="sec-head"><h2 style="font-size:clamp(28px,3vw,44px)">Continue lendo</h2></div>
-      <div class="posts" style="margin-top:28px">${related.map(r => card(r)).join('')}</div></div>`;
+      <div class="wrap more"><div class="sec-head"><h2>Continue lendo</h2></div>
+      <div class="posts">${related.map(r => card(r)).join('')}</div></div>`;
     listView.hidden = true; post.hidden = false;
     document.title = p.title + ' · Blog SIGEMEC';
     window.scrollTo(0, 0);
